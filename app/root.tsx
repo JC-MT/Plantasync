@@ -10,6 +10,7 @@ import {
 import type { Route } from "./+types/root";
 import { Footer } from "./layout/Footer";
 import { Navbar } from "./layout/Navbar";
+const { VITE_IMAGE_CDN_URL } = import.meta.env;
 import "./app.css";
 
 export const links: Route.LinksFunction = () => [
@@ -22,6 +23,10 @@ export const links: Route.LinksFunction = () => [
   {
     rel: "stylesheet",
     href: "https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap"
+  },
+  {
+    rel: "icon",
+    href: `${VITE_IMAGE_CDN_URL}plantasynclogo.png?v=1746559703&width=50`
   }
 ];
 
@@ -34,9 +39,9 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <Meta />
         <Links />
       </head>
-      <body>
+      <body className="antialiased bg-light-theme">
         <Navbar />
-        {children}
+        <main className="min-h-(--main-height)">{children}</main>
         <Footer />
         <ScrollRestoration />
         <Scripts />
