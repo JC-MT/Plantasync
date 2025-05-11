@@ -2,7 +2,6 @@
   "name": "plantasync",
   "private": true,
   "type": "module",
-  "packageManager": "yarn@4.5.0",
   "scripts": {
     "build": "react-router build",
     "cf-typegen": "wrangler types",
