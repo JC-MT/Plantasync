@@ -7,6 +7,7 @@ interface Props {
   loading: "lazy" | "eager";
   width: number;
   height: number;
+  viewTransition: number | undefined;
 }
 
 export function Image({
@@ -17,7 +18,8 @@ export function Image({
   classNames = "",
   loading = "lazy",
   width,
-  height
+  height,
+  viewTransition
 }: Props) {
   return (
     <picture>
@@ -85,6 +87,11 @@ export function Image({
         loading={loading}
         width={width}
         height={height}
+        style={{
+          viewTransitionName: `${
+            viewTransition ? `plant-image-${viewTransition}` : "none"
+          }`
+        }}
       />
     </picture>
   );
