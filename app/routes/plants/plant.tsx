@@ -1,4 +1,4 @@
-import tempPlantData from "../../api/src/models/plants.js";
+import tempPlantData from "../../models/plants.js";
 import PlantDetails from "~/components/PlantDetails.js";
 
 export async function loader({ params }) {
