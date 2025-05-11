@@ -1,5 +1,5 @@
 import { PlantCard } from "~/components/PlantCard.js";
-import tempPlantData from "../../api/src/models/plants.js";
+import tempPlantData from "../../models/plants.js";
 
 export function meta() {
   return [
