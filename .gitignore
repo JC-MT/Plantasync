@@ -2,6 +2,7 @@
 /node_modules/
 *.tsbuildinfo
 .env
+wrangler.jsonc
 
 # React Router
 /.react-router/
