@@ -49,7 +49,31 @@ export function Footer() {
               </a>
             </div>
             <div className="flex flex-col md:gap-1">
-              <h3 className="mb-2 text-xl font-bold">Lorem Title</h3>
+              <h3 className="mb-2 text-xl font-bold">Contact</h3>
+              <div className="flex gap-1 h-fit items-center">
+                <a
+                  href="https://github.com/JC-MT"
+                  target="_blank"
+                  rel="noopener"
+                >
+                  <img
+                    className="size-5 rounded-full invert-100"
+                    alt="GitHub"
+                    src="https://cdn-icons-png.flaticon.com/512/25/25231.png"
+                  />
+                </a>
+                <a
+                  href="https://www.linkedin.com/in/jan-matias/"
+                  target="_blank"
+                  rel="noopener"
+                >
+                  <img
+                    className="size-6.5 invert-100"
+                    alt="LinkedIn"
+                    src="https://www.pngmart.com/files/21/Linkedin-In-Logo-PNG-HD.png"
+                  />
+                </a>
+              </div>
               <a
                 className="text-base w-fit hover:underline underline-offset-4"
                 href="/"
@@ -61,32 +85,6 @@ export function Footer() {
                 href="/"
               >
                 Lorem Link
-              </a>
-              <a
-                className="text-base w-fit hover:underline underline-offset-4"
-                href="/"
-              >
-                Lorem Link
-              </a>
-            </div>
-            <div className="flex gap-1 h-fit items-center">
-              <a href="https://github.com/JC-MT" target="_blank" rel="noopener">
-                <img
-                  className="size-5 rounded-full invert-100"
-                  alt="GitHub"
-                  src="https://cdn-icons-png.flaticon.com/512/25/25231.png"
-                />
-              </a>
-              <a
-                href="https://www.linkedin.com/in/jan-matias/"
-                target="_blank"
-                rel="noopener"
-              >
-                <img
-                  className="size-7 invert-100"
-                  alt="LinkedIn"
-                  src="https://www.pngmart.com/files/21/Linkedin-In-Logo-PNG-HD.png"
-                />
               </a>
             </div>
           </div>

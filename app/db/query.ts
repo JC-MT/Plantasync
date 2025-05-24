@@ -4,7 +4,7 @@ const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 const defaultHeaders = {
   apikey: supabaseKey,
   Authorization: `Bearer ${supabaseKey}`,
-  "Content-Type": "application/json",
+  "Content-Type": "application/json"
 };
 
 /**
@@ -16,8 +16,8 @@ const defaultHeaders = {
 export const getData = async (query: string): Promise<any> => {
   const res = await fetch(`${supabaseUrl}/rest/v1/${query}`, {
     headers: {
-      ...defaultHeaders,
-    },
+      ...defaultHeaders
+    }
   });
 
   if (!res.ok) {
@@ -36,15 +36,15 @@ export const getData = async (query: string): Promise<any> => {
  */
 export const postData = async (
   query: string,
-  body: Record<string, any>,
+  body: Record<string, any>
 ): Promise<any> => {
   const res = await fetch(`${supabaseUrl}/rest/v1/${query}`, {
     method: "POST",
     headers: {
       ...defaultHeaders,
-      Prefer: "return=representation",
+      Prefer: "return=representation"
     },
-    body: JSON.stringify(body),
+    body: JSON.stringify(body)
   });
 
   if (!res.ok) {
@@ -63,15 +63,15 @@ export const postData = async (
  */
 export const updateData = async (
   query: string,
-  updates: Record<string, any>,
+  updates: Record<string, any>
 ): Promise<any> => {
   const res = await fetch(`${supabaseUrl}/rest/v1/${query}`, {
     method: "PATCH",
     headers: {
       ...defaultHeaders,
-      Prefer: "return=representation",
+      Prefer: "return=representation"
     },
-    body: JSON.stringify(updates),
+    body: JSON.stringify(updates)
   });
 
   if (!res.ok) {
@@ -92,8 +92,8 @@ export const deleteData = async (query: string): Promise<boolean> => {
     method: "DELETE",
     headers: {
       ...defaultHeaders,
-      Prefer: "return=minimal",
-    },
+      Prefer: "return=minimal"
+    }
   });
 
   if (!res.ok) {

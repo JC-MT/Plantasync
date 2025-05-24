@@ -6,8 +6,9 @@
 }
 
 @theme {
-  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif,
-    "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  --font-sans:
+    "Inter", ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji",
+    "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
 
   --color-light-theme: #f5f0e6;
   --color-dark-theme: #0e100f;
@@ -17,4 +18,41 @@
   --color-forrest-green: #54624c;
   --color-dark-green: #234823;
   --color-plant-card: #f4dbcd;
+}
+
+@keyframes scale-a-little {
+  from {
+    scale: 0.5;
+  }
+}
+
+@keyframes fade-in-out {
+  from {
+    opacity: 0.5;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  @supports (animation-timeline: view()) {
+    [data-animated="box"] {
+      animation: scale-a-little linear both, fade-in-out linear both;
+      animation-timeline: view();
+      animation-range: 0vh 50vh;
+    }
+  }
+}
+
+@keyframes parallax {
+  to {
+    transform: translateY(35vh);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  @supports (animation-timeline: scroll()) {
+    [data-animated="parallax"] {
+      animation: parallax linear both;
+      animation-timeline: scroll();
+    }
+  }
 }

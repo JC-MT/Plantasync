@@ -14,13 +14,10 @@ export function Navbar() {
         <div className="hidden md:flex gap-2">
           <NavLink
             to="/plants"
-            className={({ isActive, isPending }) =>
-              [
-                "font-medium text-sm lg:text-base py-1 px-4 rounded-full hover:bg-dark-green hover:text-light-green",
-                isPending && "bg-dark-green/5",
-                isActive && "bg-dark-green text-light-green"
-              ].join(" ")
-            }
+            className={({ isActive }) => {
+              return `font-medium text-sm lg:text-base py-1 px-4 rounded-full  hover:bg-dark-green hover:text-light-green
+                ${isActive ? "bg-dark-green text-light-green" : "bg-dark-green/5 text-dark-green"}`;
+            }}
             prefetch="intent"
             end
           >
@@ -28,13 +25,10 @@ export function Navbar() {
           </NavLink>
           <NavLink
             to={"/explore"}
-            className={({ isActive, isPending }) =>
-              [
-                "font-medium text-sm lg:text-base py-1 px-4 rounded-full hover:bg-dark-green hover:text-light-green",
-                isPending && "bg-dark-green/5",
-                isActive && "bg-dark-green text-light-green"
-              ].join(" ")
-            }
+            className={({ isActive }) => {
+              return `font-medium text-sm lg:text-base py-1 px-4 rounded-full  hover:bg-dark-green hover:text-light-green
+                ${isActive ? "bg-dark-green text-light-green" : "bg-dark-green/5 text-dark-green"}`;
+            }}
             prefetch="intent"
             end
           >
@@ -42,26 +36,20 @@ export function Navbar() {
           </NavLink>
           <NavLink
             to={"/register"}
-            className={({ isActive, isPending }) =>
-              [
-                "font-medium text-sm lg:text-base py-1 px-4 rounded-full hover:bg-dark-green hover:text-light-green",
-                isPending && "bg-dark-green/5",
-                isActive && "bg-dark-green text-light-green"
-              ].join(" ")
-            }
+            className={({ isActive }) => {
+              return `font-medium text-sm lg:text-base py-1 px-4 rounded-full  hover:bg-dark-green hover:text-light-green
+                ${isActive ? "bg-dark-green text-light-green" : "bg-dark-green/5 text-dark-green"}`;
+            }}
             prefetch="intent"
           >
             Sign up
           </NavLink>
           <NavLink
             to={"/plants/add"}
-            className={({ isActive, isPending }) =>
-              [
-                "font-medium text-sm lg:text-base py-1 px-4 rounded-full hover:bg-dark-green hover:text-light-green",
-                isPending && "bg-dark-green/5",
-                isActive && "bg-dark-green text-light-green"
-              ].join(" ")
-            }
+            className={({ isActive }) => {
+              return `font-medium text-sm lg:text-base py-1 px-4 rounded-full  hover:bg-dark-green hover:text-light-green
+                ${isActive ? "bg-dark-green text-light-green" : "bg-dark-green/5 text-dark-green"}`;
+            }}
             prefetch="intent"
           >
             Add Plants
