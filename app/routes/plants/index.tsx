@@ -2,6 +2,7 @@ import { useLoaderData } from "react-router";
 import { getData } from "~/db/query.js";
 import { PlantCard } from "~/components/PlantCard.js";
 import { Image } from "~/components/Image.js";
+import PageContainer from "~/layout/PageContainer.js";
 
 export function meta() {
   return [
@@ -21,7 +22,7 @@ export async function loader() {
 export default function Index() {
   const plants = useLoaderData();
   return (
-    <section className="max-w-7xl mx-auto px-4 lg:px-16 py-5 text-dark-green">
+    <PageContainer>
       <h1 className="text-3xl/none md:text-5xl font-bold tracking-tight mb-2">
         My Plants
       </h1>
@@ -42,6 +43,6 @@ export default function Index() {
           </PlantCard>
         ))}
       </div>
-    </section>
+    </PageContainer>
   );
 }
