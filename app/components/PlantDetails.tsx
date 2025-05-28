@@ -25,7 +25,7 @@ export default function PlantDetails({ plant }) {
               viewTransitionName: `plant-title-${plant.id}`
             }}
           >
-            {plant.common[0]}
+            {plant.name}
           </h1>
           <p className="text-base font-medium">{plant.latin}</p>
         </div>

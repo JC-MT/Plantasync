@@ -29,7 +29,7 @@ export default function Index() {
         {plants.map((plant, idx: number) => (
           <PlantCard key={idx} plant={plant}>
             <Image
-              imageUrl='default_plant_image.jpg?v=1746612628'
+              imageUrl="default_plant_image.jpg?v=1746612628"
               classNames="h-44 sm:h-48 md:h-52 lg:h-56 w-full object-cover bg-plant-card rounded-t-lg border-b border-zinc-200"
               loading={"lazy"}
               sizes="(min-width: 1024px) 20vw, (min-width: 768px) 33vw, 45vw"
@@ -37,7 +37,7 @@ export default function Index() {
               isHero={false}
               width={1000}
               height={1000}
-              viewTransition={undefined}
+              viewTransition={plant.id}
             />
           </PlantCard>
         ))}
