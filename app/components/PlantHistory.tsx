@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState } from "react";
 
 export default function PlantHistory({ actions }) {
   const [selected, setSelected] = useState({
@@ -57,60 +57,62 @@ export default function PlantHistory({ actions }) {
   }
 
   return (
-    <div className="flex flex-col p-3 rounded-md border border-zinc-200 shadow-xs">
+    <div className="flex flex-col p-4 rounded-md border border-zinc-200 bg-white text-dark-green overflow-hidden">
       <div>
-        <h2 className="font-bold text-3xl md:text-4xl">
-          History
-        </h2>
+        <h2 className="font-bold text-3xl md:text-4xl">History</h2>
 
-        <div className="flex flex-col gap-0 pt-0 p-3 px-1">
-          <h3 className="text-left p-1 text-lg">Filtered by:</h3>
-          <div className="flex flex-row">
-            <div
-              onClick={() => handleSelected('created')}
-              className={`hover:cursor-pointer border-2 hover:border-[#64aa85] ${
+        <div className="flex items-center gap-1">
+          <h3 className="text-base font-semibold">Filter by:</h3>
+          <div className="flex flex-row gap-1 overflow-x-auto snap-x">
+            <button
+              type="button"
+              onClick={() => handleSelected("created")}
+              className={`border cursor-pointer rounded-full border-zinc-200 ${
                 selected.created
-                  ? 'bg-[#64aa85] hover:bg-[#64aa85]'
-                  : 'text-black bg-slate-50 hover:bg-slate-100'
-              } p-2 w-fit button-style m-0 gap-1 justify-center place-items-center drop-shadow-xl`}
+                  ? "bg-dark-green text-light-green"
+                  : "bg-dark-green/5 text-dark-green"
+              } p-2 py-1 px-4 gap-1 hover:bg-dark-green hover:text-light-green`}
             >
               <p>Created</p>
-            </div>
-            <div
-              onClick={() => handleSelected('watered')}
-              className={`hover:cursor-pointer border-2 hover:border-[#64aa85] ${
+            </button>
+            <button
+              type="button"
+              onClick={() => handleSelected("watered")}
+              className={`border cursor-pointer rounded-full border-zinc-200 ${
                 selected.watered
-                  ? 'bg-[#64aa85] hover:bg-[#64aa85]'
-                  : 'text-black bg-slate-50 hover:bg-slate-100'
-              } p-2 w-fit button-style m-0 gap-1 justify-center place-items-center drop-shadow-xl`}
+                  ? "bg-dark-green text-light-green"
+                  : "bg-dark-green/5 text-dark-green"
+              } p-2 py-1 px-4 hover:bg-dark-green hover:text-light-green`}
             >
               <p>Watered</p>
-            </div>
-            <div
-              onClick={() => handleSelected('updated')}
-              className={`hover:cursor-pointer border-2 hover:border-[#64aa85] ${
+            </button>
+            <button
+              type="button"
+              onClick={() => handleSelected("updated")}
+              className={`border cursor-pointer rounded-full border-zinc-200 ${
                 selected.updated
-                  ? 'bg-[#64aa85] hover:bg-[#64aa85]'
-                  : 'text-black bg-slate-50 hover:bg-slate-100'
-              } p-2 w-fit button-style m-0 gap-1 justify-center place-items-center drop-shadow-xl`}
+                  ? "bg-dark-green text-light-green"
+                  : "bg-dark-green/5 text-dark-green"
+              } p-2 py-1 px-4 hover:bg-dark-green hover:text-light-green`}
             >
               <p>Updated</p>
-            </div>
-            <div
-              onClick={() => handleSelected('skipped')}
-              className={`hover:cursor-pointer border-2 hover:border-[#64aa85] ${
+            </button>
+            <button
+              type="button"
+              onClick={() => handleSelected("skipped")}
+              className={`border cursor-pointer rounded-full border-zinc-200 ${
                 selected.skipped
-                  ? 'bg-[#64aa85] hover:bg-[#64aa85]'
-                  : 'text-black bg-slate-50 hover:bg-slate-100'
-              } p-2 w-fit button-style m-0 gap-1 justify-center place-items-center drop-shadow-xl`}
+                  ? "bg-dark-green text-light-green"
+                  : "bg-dark-green/5 text-dark-green"
+              } p-2 py-1 px-4 hover:bg-dark-green hover:text-light-green`}
             >
               <p>Skipped</p>
-            </div>
+            </button>
           </div>
         </div>
         <div className="flex h-fit">
-          <div className={`w-fit bg-white divide-y divide-gray-100 rounded-lg`}>
-            <ul className="flex items-center justify-between border-t border-gray-200 bg-white px-4 py-3 sm:px-6 gap-2 p-3 text-sm text-gray-700">
+          <div className="w-fit bg-white rounded-lg">
+            <ul className="flex items-center justify-between gap-2 text-sm">
               <li>
                 <div className="flex items-center">
                   <input
@@ -144,61 +146,56 @@ export default function PlantHistory({ actions }) {
                     value={showAmount}
                     className="w-4 h-4 bg-gray-100 border-gray-300 rounded"
                   />
-                  <label className="ml-2 text-sm font-medium">
-                    10 per page
-                  </label>
+                  <label className="ml-2 text-sm font-bold">10 per page</label>
                 </div>
               </li>
             </ul>
           </div>
         </div>
       </div>
-      <div className={`flex flex-col`}>
+      <div className="flex flex-col divide-y divide-zinc-200 gap-1">
         {actions
           .filter(handleFiltering)
           .slice(start, end)
           .map((action, id) => {
             const icon = {
-            //   Watered: Watered,
-            //   Updated: Updated,
-            //   Skipped: Skipped,
-              Created: 'https://cdn-icons-png.flaticon.com/512/628/628324.png'
+              //   Watered: Watered,
+              //   Updated: Updated,
+              //   Skipped: Skipped,
+              Created: "https://cdn-icons-png.flaticon.com/512/628/628324.png"
             };
             const link = {
-              Watered: 'https://www.flaticon.com/free-icons/plant',
-              Updated: 'https://www.flaticon.com/free-icons/refresh',
-              Skipped: 'https://www.flaticon.com/free-icons/skip'
+              Watered: "https://www.flaticon.com/free-icons/plant",
+              Updated: "https://www.flaticon.com/free-icons/refresh",
+              Skipped: "https://www.flaticon.com/free-icons/skip"
             };
             const title = {
-              Watered: 'Plant icons created by Freepik - Flaticon',
-              Updated: 'Refresh icons created by Freepik - Flaticon',
-              Skipped: 'Skip icons created by Gajah Mada - Flaticon'
+              Watered: "Plant icons created by Freepik - Flaticon",
+              Updated: "Refresh icons created by Freepik - Flaticon",
+              Skipped: "Skip icons created by Gajah Mada - Flaticon"
             };
 
             return (
-              <div key={id}>
-                <div
-                  key={id}
-                  className="flex flex-row place-content-between pointer-events-none"
+              <div
+                key={id}
+                className="flex flex-row place-content-between pointer-events-none"
+              >
+                <p className="text-left text-base font-semibold text-dark-green">
+                  {action.action} on{" "}
+                  {/* {dayjs(action.date).format('MMM D, YYYY')}{' '} */}
+                </p>
+                <a
+                  href={link[action.action] || "#"}
+                  rel="noreferrer"
+                  target="_blank"
+                  title={title[action.action]}
                 >
-                  <p className="pb-1 px-1 text-left">
-                    {action.action} on{' '}
-                    {/* {dayjs(action.date).format('MMM D, YYYY')}{' '} */}
-                  </p>
-                  <a
-                    href={link[action.action] || '#'}
-                    rel="noreferrer"
-                    target="_blank"
-                    title={title[action.action]}
-                  >
-                    {/* <img
+                  {/* <img
                       alt="action icon"
                       className="mr-3 h-6 w-6"
                       src={icon[action.action]}
                     /> */}
-                  </a>
-                </div>
-                <hr className="pb-2"></hr>
+                </a>
               </div>
             );
           })}
