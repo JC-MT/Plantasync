@@ -27,7 +27,7 @@
 }
 @keyframes scale-half {
   from {
-    scale: 0.5;
+    transform: scale(0.5);
   }
 }
 
@@ -43,8 +43,8 @@
 
 [data-animated="box"] {
   animation:
-    scale-half linear both,
-    fade-in-out linear both;
+    scale-half 1s linear both,
+    fade-in-out 1s linear both;
   animation-timeline: view();
   animation-range: 0% 40%;
 }
