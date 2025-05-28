@@ -1,4 +1,5 @@
 import PlantDetails from "~/components/PlantDetails.js";
+import PageContainer from "~/layout/PageContainer.js";
 import { getData } from "../../db/query.js";
 
 export async function loader({
@@ -22,8 +23,8 @@ export function meta({ data }: { data: any }) {
 
 export default function Detail({ loaderData }: { loaderData: any }) {
   return (
-    <section className="max-w-7xl mx-auto px-4 lg:px-16 pb-5 sm:pt-5 text-dark-green">
+    <PageContainer>
       <PlantDetails plant={loaderData} />
-    </section>
+    </PageContainer>
   );
 }

@@ -8,6 +8,7 @@ import { redirect, useSearchParams } from "react-router";
 import { useLocalStorage } from "~/hooks/useLocalStorage.js";
 import { Filter } from "../../components/Filter";
 import { useState } from "react";
+import PageContainer from "~/layout/PageContainer.js";
 
 type LoaderData = {
   catchedData?: {
@@ -110,7 +111,7 @@ export default function Index({ loaderData }: { loaderData: LoaderData }) {
     );
   }
   return (
-    <section className="max-w-7xl mx-auto px-4 lg:px-16 py-5 text-dark-green">
+    <PageContainer>
       <div className="flex flex-col sm:flex-row sm:items-center mb-2 gap-1 sm:gap-4">
         <h1 className="text-3xl/none md:text-5xl font-bold tracking-tight">
           All Plants
@@ -141,6 +142,6 @@ export default function Index({ loaderData }: { loaderData: LoaderData }) {
         renderFilteredList={renderFilteredList}
         setSearch={setSearch}
       />
-    </section>
+    </PageContainer>
   );
 }
