@@ -1,5 +1,3 @@
-const { VITE_IMAGE_CDN_URL } = import.meta.env;
-import { Image } from "./Image";
 import { Link, useViewTransitionState, useLocation } from "react-router";
 
 interface Plant {
@@ -7,10 +5,17 @@ interface Plant {
   origin: string;
   id: number;
   common: string[];
+  name: string;
 }
 
-export function PlantCard({ plant }: { plant: Plant }) {
-  const location = useLocation()
+export function PlantCard({
+  plant,
+  children
+}: {
+  plant: Plant;
+  children: React.ReactNode;
+}) {
+  const location = useLocation();
   const href = `${location.pathname}/${plant.id}`;
   const isTransitioning = useViewTransitionState(href);
 
@@ -21,25 +26,17 @@ export function PlantCard({ plant }: { plant: Plant }) {
       prefetch="intent"
       viewTransition
     >
-      <Image
-        imageUrl={`${VITE_IMAGE_CDN_URL}default_plant_image.jpg?v=1746612628`}
-        classNames="h-44 sm:h-48 md:h-52 lg:h-56 w-full object-cover bg-plant-card rounded-t-lg border-b border-zinc-200"
-        loading={"lazy"}
-        sizes="(min-width: 1024px) 20vw, (min-width: 768px) 33vw, 45vw"
-        alt="Stock plant image"
-        isHero={false}
-        width={1000}
-        height={1000}
-        viewTransition={isTransitioning ? plant.id : undefined}
-      />
-      <div className="flex flex-col gap-2 p-2 bg-white flex-grow">
+      {children}
+      <div className="flex flex-col gap-1 p-2 bg-white flex-grow">
         <h3
           style={{
-            viewTransitionName: isTransitioning ? `plant-title-${plant.id}` : "none"
+            viewTransitionName: isTransitioning
+              ? `plant-title-${plant.id}`
+              : "none"
           }}
-          className="text-xl/none font-semibold"
+          className="text-xl font-semibold truncate"
         >
-          {plant.common[0]}
+          {plant.name}
         </h3>
         <p className="text-base/none">{plant.origin}</p>
       </div>
