@@ -20,7 +20,12 @@
   --color-plant-card: #f4dbcd;
 }
 
-@keyframes scale-a-little {
+@keyframes parallax {
+  to {
+    transform: translateY(35vh);
+  }
+}
+@keyframes scale-half {
   from {
     scale: 0.5;
   }
@@ -31,28 +36,15 @@
     opacity: 0.5;
   }
 }
-
-@media (prefers-reduced-motion: no-preference) {
-  @supports (animation-timeline: view()) {
-    [data-animated="box"] {
-      animation: scale-a-little linear both, fade-in-out linear both;
-      animation-timeline: view();
-      animation-range: 0vh 50vh;
-    }
-  }
+[data-animated="parallax"] {
+  animation: parallax linear both;
+  animation-timeline: scroll();
 }
 
-@keyframes parallax {
-  to {
-    transform: translateY(35vh);
-  }
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  @supports (animation-timeline: scroll()) {
-    [data-animated="parallax"] {
-      animation: parallax linear both;
-      animation-timeline: scroll();
-    }
-  }
+[data-animated="box"] {
+  animation:
+    scale-half linear both,
+    fade-in-out linear both;
+  animation-timeline: view();
+  animation-range: 0% 40%;
 }

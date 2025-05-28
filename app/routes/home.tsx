@@ -18,7 +18,7 @@ export default function Home() {
       <section className="relative">
         <div data-animated="parallax">
           <Image
-            imageUrl='parallax-hero.png?v=1746351965'
+            imageUrl="parallax-hero.png?v=1746351965"
             sizes="100vw"
             isHero={true}
             alt={"Hero image of various house plants"}
@@ -171,6 +171,7 @@ export default function Home() {
           </div>
         </section>
       </div>
+      <script src="https://flackr.github.io/scroll-timeline/dist/scroll-timeline.js"></script>
     </>
   );
 }
