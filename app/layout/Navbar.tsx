@@ -1,8 +1,9 @@
 import { NavLink, Link } from "react-router";
+import VaulDrawer from "../components/Drawer";
 
 export function Navbar() {
   return (
-    <header className="w-full z-20 sticky top-0 border-b border-zinc-200 bg-light-theme text-dark-green">
+    <header className="w-full z-30 sticky top-0 border-b border-zinc-200 bg-light-theme text-dark-green">
       <nav className="max-w-7xl h-(--navbar-height) mx-auto px-4 lg:px-16 flex justify-between items-center">
         <NavLink
           to={"/"}
@@ -67,6 +68,7 @@ export function Navbar() {
             Source Code
           </Link>
         </div>
+        <VaulDrawer isModal={false} direction="top"/>
       </nav>
     </header>
   );
