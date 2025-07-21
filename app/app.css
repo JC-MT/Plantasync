@@ -55,6 +55,11 @@
   --color-plant-card: #f4dbcd;
 }
 
+@starting-style {
+  .ss-scale-75 {
+    transform: scale(0.75);
+  }
+}
 @keyframes parallax {
   to {
     transform: translateY(35vh);
