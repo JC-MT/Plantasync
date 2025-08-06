@@ -1,50 +1,71 @@
-import { useLocation, useSearchParams, Form } from "react-router";
 import { useGardenData } from "~/hooks/useGardenData";
-
-const INCREMENT = 10;
+import { FILTERED_PLANT_INCREMENT } from "~/constants";
+import type { Plant, Search } from "~/components/types/SharedTypes.js";
+import { useLocation, useSearchParams, Form } from "react-router";
+import { isObjectValuesEmpty } from "~/utils/functions";
 
 export function Pagination({
-  renderedPlants,
-  renderFilteredList,
-  setSearch
+  currentPlants,
+  filteredPlants,
+  filterFunction,
+  setSearch,
+  currentSearch
 }: {
-  renderedPlants: object[];
-  renderFilteredList: (plant: any) => boolean;
-  setSearch: (search: { name: string; climate: string; light: string }) => void;
+  currentPlants: number;
+  filteredPlants: number;
+  filterFunction: (plant: Plant, search: Search) => boolean;
+  setSearch: (search: Search) => void;
+  currentSearch: Search;
 }) {
+  const { allPlants } = useGardenData();
   const { pathname, search } = useLocation();
   const [searchParams, setSearchParams] = useSearchParams();
-  const { plants }: { plants: any[] } = useGardenData();
-  const visiblePlantCount = renderedPlants?.filter(renderFilteredList).length;
-  const possiblePlantCount = plants?.filter(renderFilteredList).length;
-  const limitParam = Number(searchParams.get("limit")) || visiblePlantCount;
+  const limitParam = Number(searchParams.get("limit")) || filteredPlants;
+  const filterIsActive = isObjectValuesEmpty(currentSearch);
+  const allFilteredPlants = allPlants.filter((plant) =>
+    filterFunction(plant, currentSearch)
+  ).length;
+
+  const showLoadMore =
+    filterIsActive && filteredPlants < allFilteredPlants && filteredPlants
+      ? true
+      : currentPlants < allPlants.length && filteredPlants
+        ? true
+        : false;
 
   return (
     <div className="mt-10 grid place-self-center text-center">
-      {visiblePlantCount < possiblePlantCount && (
+      {showLoadMore && (
         <Form method="post" action={pathname + search} preventScrollReset>
-          <input type="hidden" name="limit" value={limitParam + INCREMENT} />
-          <input type="hidden" name="plantsExist" value={plants.length} />
+          <input
+            type="hidden"
+            name="limit"
+            value={
+              Math.max(limitParam, FILTERED_PLANT_INCREMENT) +
+              FILTERED_PLANT_INCREMENT
+            }
+          />
+          <input type="hidden" name="plantsExist" value={allPlants.length} />
           <button
             type="submit"
-            className="mb-4 px-4 py-1 rounded-full hover:cursor-pointer bg-dark-green/5 hover:bg-dark-green hover:text-light-green text-xl font-medium text-dark-green"
+            className="mb-4 px-8 py-2 rounded-full hover:cursor-pointer bg-dark-green/5 hover:bg-dark-green hover:text-light-green text-xl font-medium text-dark-green"
           >
             Load More
           </button>
         </Form>
       )}
       <p className="text-sm">
-        {visiblePlantCount
-          ? `Showing ${limitParam > plants.length ? visiblePlantCount : limitParam} of ${plants.length} plants`
+        {currentPlants
+          ? `Showing ${limitParam >= filteredPlants ? filteredPlants : limitParam} of ${allPlants.length} plants`
           : `No plants found`}
 
-        {!visiblePlantCount ? (
+        {!filteredPlants ? (
           <button
             type="button"
             className="mb-4 px-4 py-1 rounded-full hover:cursor-pointer bg-dark-green/5 hover:bg-dark-green hover:text-light-green text-xl font-medium text-dark-green"
             onClick={() => {
               setSearchParams({});
-              setSearch({ name: "", climate: "", light: "" });
+              setSearch({ name: "", climate: "", ideal_light: "" });
             }}
           >
             Reset Search
