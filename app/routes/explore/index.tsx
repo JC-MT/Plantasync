@@ -1,20 +1,20 @@
-import { PlantCard } from "~/components/PlantCard.js";
 import { getData } from "~/db/query.js";
-import { Pagination } from "../../components/Pagination";
+import { useEffect, useState } from "react";
 import { Image } from "~/components/Image.js";
+import { includesTerm } from "~/utils/functions";
+import { Filter } from "../../components/Filter";
+import PageContainer from "~/layout/PageContainer.js";
+import { PlantCard } from "~/components/PlantCard.js";
 import { gardenDataExists } from "~/cookies.server.js";
-import type { Route } from "../+types/home";
+import { FILTERED_PLANT_INCREMENT } from "~/constants";
+import { Pagination } from "../../components/Pagination";
 import { redirect, useSearchParams } from "react-router";
 import { useLocalStorage } from "~/hooks/useLocalStorage.js";
-import { Filter } from "../../components/Filter";
-import { useState } from "react";
-import PageContainer from "~/layout/PageContainer.js";
-
-type LoaderData = {
-  catchedData?: {
-    data: any[];
-  };
-};
+import type {
+  LoaderData,
+  Plant,
+  Search
+} from "~/components/types/SharedTypes.js";
 
 export function meta() {
   return [
@@ -36,26 +36,24 @@ export async function loader({ request }: { request: Request }) {
     `garden?select=*&limit=${url.searchParams.get("limit") || "10"}`
   );
   if (!plants) {
-    throw new Response("Failed to get plants:", { status: 500 });
+    throw new Response("Failed to get plants:", { status: 404 });
   }
-  return plants;
+  return { data: plants, catchedData: false };
 }
 
-export async function action({ request }: Route.ActionArgs) {
+export async function action({ request }: { request: Request }) {
   const cookieHeader = request.headers.get("Cookie");
   const existingCookie = await gardenDataExists.parse(cookieHeader);
   const bodyData = await request.formData();
   const searchParams = new URL(request.url).searchParams;
   searchParams.set("limit", `${bodyData.get("limit")}`);
-
   const headers = new Headers();
 
-  if (!existingCookie) {
+  if (!existingCookie?.exists) {
     headers.append(
       "Set-Cookie",
       await gardenDataExists.serialize({
-        exists: Number(bodyData.get("plantsExist")) > 0,
-        timestamp: new Date()
+        exists: Number(bodyData.get("plantsExist")) > 0
       })
     );
   }
@@ -64,83 +62,81 @@ export async function action({ request }: Route.ActionArgs) {
 
 export default function Index({ loaderData }: { loaderData: LoaderData }) {
   const [searchParams] = useSearchParams();
-  const [search, setSearch] = useState(() => {
-    return {
-      name: searchParams.get("name") || "",
-      climate: searchParams.get("climate") || "",
-      light: searchParams.get("light") || ""
-    };
+  const [plants, setPlants] = useState<Plant[]>([]);
+  const { value } = useLocalStorage("gardenData", {});
+  const [search, setSearch] = useState<Search>({
+    name: "",
+    climate: "",
+    ideal_light: ""
   });
 
-  const renderFilteredList = (item: {
-    category: string;
-    ideal_light: string;
-    name: string;
-  }) => {
-    if (!search.name && !search.climate && !search.light) return true;
-
-    const nameSearchTerm = search.name.toLowerCase();
-    const climateSearchTerm = search.climate.toLowerCase();
-    const lightSearchTerm = search.light.toLowerCase();
-    const { category, ideal_light, name } = item;
-
-    if (nameSearchTerm && !name.toLowerCase().includes(nameSearchTerm)) {
-      return false;
+  const matchesSearchTerm = (plant: Plant, search: Search) => {
+    for (const key in search) {
+      const value = search[key as keyof typeof search];
+      const plantValue = plant[key as keyof Plant];
+      if (value && !includesTerm(String(plantValue), value)) {
+        return false;
+      }
     }
-    if (
-      climateSearchTerm &&
-      !category.toLowerCase().includes(climateSearchTerm)
-    ) {
-      return false;
-    }
-    if (
-      lightSearchTerm &&
-      !ideal_light.toLowerCase().includes(lightSearchTerm)
-    ) {
-      return false;
-    }
-
     return true;
   };
 
-  if (loaderData?.catchedData) {
-    const { value } = useLocalStorage("gardenData", {});
-    loaderData = value?.data.slice(
-      0,
-      searchParams.get("limit") || value?.data.length
-    );
-  }
+  useEffect(() => {
+    if (loaderData?.catchedData) {
+      setPlants(
+        value?.data.slice(
+          0,
+          searchParams.get("limit") || FILTERED_PLANT_INCREMENT
+        )
+      );
+    } else {
+      setPlants(loaderData.data || []);
+    }
+  }, [loaderData, value]);
+
+  useEffect(() => {
+    setSearch({
+      name: searchParams.get("name") || "",
+      climate: searchParams.get("climate") || "",
+      ideal_light: searchParams.get("ideal_light") || ""
+    });
+  }, [searchParams]);
+
   return (
     <PageContainer>
-      <div className="flex flex-col sm:flex-row sm:items-center mb-2 gap-1 sm:gap-4">
-        <h1 className="text-3xl/none md:text-5xl font-bold tracking-tight">
+      <div className="flex flex-col md:flex-row mb-2 gap-1 md:gap-4 w-full md:items-center">
+        <h1 className="text-3xl/none md:text-5xl font-bold tracking-tight min-w-fit">
           All Plants
         </h1>
         <Filter search={search} setSearch={setSearch} />
       </div>
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 md:gap-4 lg:gap-6">
-        {loaderData
-          ? loaderData.filter(renderFilteredList).map((plant, idx: number) => (
-              <PlantCard key={idx} plant={plant}>
-                <Image
-                  imageUrl="default_plant_image.jpg?v=1746612628"
-                  classNames="h-44 sm:h-48 md:h-52 lg:h-56 w-full object-cover bg-plant-card rounded-t-lg border-b border-zinc-200"
-                  loading={"lazy"}
-                  sizes="(min-width: 1024px) 20vw, (min-width: 768px) 33vw, 45vw"
-                  alt="Stock plant image"
-                  isHero={false}
-                  width={1000}
-                  height={1000}
-                  viewTransition={plant.id}
-                />
-              </PlantCard>
-            ))
-          : null}
+        {plants
+          .filter((plant) => matchesSearchTerm(plant, search))
+          .map((plant: Plant, idx: number) => (
+            <PlantCard key={idx} plant={plant}>
+              <Image
+                imageUrl="default_plant_image.jpg?v=1746612628"
+                classNames="h-44 sm:h-48 md:h-52 lg:h-56 w-full object-cover bg-plant-card rounded-t-lg border-b border-zinc-200"
+                loading={"lazy"}
+                sizes="(min-width: 1024px) 20vw, (min-width: 768px) 33vw, 45vw"
+                alt="Stock plant image"
+                isHero={false}
+                width={1000}
+                height={1000}
+                viewTransition={plant.id}
+              />
+            </PlantCard>
+          ))}
       </div>
       <Pagination
-        renderedPlants={loaderData}
-        renderFilteredList={renderFilteredList}
+        currentPlants={plants.length}
+        filteredPlants={
+          plants.filter((plant) => matchesSearchTerm(plant, search)).length
+        }
+        filterFunction={matchesSearchTerm}
         setSearch={setSearch}
+        currentSearch={search}
       />
     </PageContainer>
   );
