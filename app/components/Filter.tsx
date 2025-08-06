@@ -1,82 +1,70 @@
-import { useNavigate } from "react-router";
+import { Combobox } from "./Combobox";
+import { Input } from "../components/ui/input";
+import { useSearchParams } from "react-router";
+import { climates, lights } from "../constants";
+import { type ChangeEvent, type Dispatch, type SetStateAction } from "react";
 
-type FilterProps = {
+type Props = {
   search: {
     name: string;
     climate: string;
-    light: string;
+    ideal_light: string;
   };
-  setSearch: React.Dispatch<
-    React.SetStateAction<{
+  setSearch: Dispatch<
+    SetStateAction<{
       name: string;
       climate: string;
-      light: string;
+      ideal_light: string;
     }>
   >;
 };
 
-export function Filter({ search, setSearch }: FilterProps) {
-  const navigate = useNavigate();
+export function Filter({ search, setSearch }: Props) {
+  const [searchParams, setSearchParams] = useSearchParams();
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+    e: ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
     const { value, name } = e.target;
     setSearch((prev) => {
       return { ...prev, [name]: value };
     });
 
-    const url = new URL(window.location.href);
     if (value === "") {
-      url.searchParams.delete(name);
+      searchParams.delete(name);
     } else {
-      url.searchParams.set(name, value);
+      searchParams.set(name, value);
     }
-    navigate(
-      {
-        pathname: url.pathname,
-        search: url.search
-      },
-      { preventScrollReset: true }
-    );
+
+    setSearchParams(searchParams);
   };
 
   return (
-    <div className="flex flex-col sm:flex-row sm:items-center gap-2">
-      Filter by:
-      <input
+    <div className="grid md:grid-cols-2 gap-2 w-full">
+      <Input
         type="text"
-        placeholder="Plant name..."
+        placeholder="Type a plant name..."
+        className="text-dark-green"
         value={search.name}
         name="name"
         onChange={handleChange}
         title="Search by plant name"
-        className="px-4 py-2 rounded-full border border-dark-green/20 focus:outline-none focus:ring-2 focus:ring-light-green/50"
       />
-      <select
-        className="px-4 py-2 rounded-full border border-dark-green/20 focus:outline-none focus:ring-2 focus:ring-light-green/50"
-        title="Filter by climate"
-        value={search.climate}
-        name="climate"
-        onChange={handleChange}
-      >
-        <option value="">Choose climate</option>
-        <option value="tropical">Tropical</option>
-        <option value="temperate">Temperate</option>
-        <option value="arid">Arid</option>
-      </select>
-      <select
-        className="px-4 py-2 rounded-full border border-dark-green/20 focus:outline-none focus:ring-2 focus:ring-light-green/50"
-        title="Filter by ideal light"
-        value={search.light}
-        name="light"
-        onChange={handleChange}
-      >
-        <option value="">Choose ideal light</option>
-        <option value="direct">Direct</option>
-        <option value="partial">Partial</option>
-        <option value="indirect">Indirect</option>
-        <option value="shade">Shade</option>
-      </select>
+      <div className="grid grid-cols-2 gap-2">
+        <Combobox
+          name="climate"
+          value={search.climate}
+          options={climates}
+          artifact="climate"
+          handleSelect={handleChange}
+        />
+        <Combobox
+          name="ideal_light"
+          value={search.ideal_light}
+          options={lights}
+          artifact="light"
+          handleSelect={handleChange}
+        />
+      </div>
     </div>
   );
 }
