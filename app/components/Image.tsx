@@ -29,20 +29,19 @@ export function Image({
       {isHero && (
         <>
           <source
-            media="(min-width: 1600px)"
+            media="(min-width: 1500px)"
             srcSet={`
-              ${fullImageUrl}?width=2400 2400w,
-              ${fullImageUrl}?width=2000 2000w,
-              ${fullImageUrl}?width=1800 1800w
+              ${fullImageUrl}&width=2000 2000w,
+              ${fullImageUrl}&width=1800 1800w
             `}
             sizes="100vw"
           />
           <source
             media="(min-width: 1300px)"
             srcSet={`
-              ${fullImageUrl}?width=1600 1600w,
-              ${fullImageUrl}?width=1400 1400w,
-              ${fullImageUrl}?width=1200 1200w,
+              ${fullImageUrl}&width=1600 1600w,
+              ${fullImageUrl}&width=1400 1400w,
+              ${fullImageUrl}&width=1200 1200w,
             `}
             sizes="100vw"
           />
@@ -51,41 +50,41 @@ export function Image({
       <source
         media="(min-width: 768px)"
         srcSet={`
-          ${fullImageUrl}?width=1200 1200w,
-          ${fullImageUrl}?width=1000 1000w,
-          ${fullImageUrl}?width=800 800w
+          ${fullImageUrl}&width=1200 1200w,
+          ${fullImageUrl}&width=1000 1000w,
+          ${fullImageUrl}&width=800 800w
         `}
         sizes={sizes}
       />
       <source
         media="(max-width: 767px)"
         srcSet={`
-          ${fullImageUrl}?width=1000 1000w,
-          ${fullImageUrl}?width=900 900w,
-          ${fullImageUrl}?width=800 800w
+          ${fullImageUrl}&width=1000 1000w,
+          ${fullImageUrl}&width=900 900w,
+          ${fullImageUrl}&width=800 800w
         `}
         sizes={sizes}
       />
       <source
         media="(max-width: 550px)"
         srcSet={`
-          ${fullImageUrl}?width=900 900w,
-          ${fullImageUrl}?width=800 800w
+          ${fullImageUrl}&width=900 900w,
+          ${fullImageUrl}&width=800 800w
         `}
         sizes={sizes}
       />
       <source
         media="(max-width: 380px)"
         srcSet={`
-          ${fullImageUrl}?width=800 800w,
-          ${fullImageUrl}?width=700 700w,
-          ${fullImageUrl}?width=600 600w
+          ${fullImageUrl}&width=800 800w,
+          ${fullImageUrl}&width=700 700w,
+          ${fullImageUrl}&width=600 600w
         `}
         sizes={sizes}
       />
       <img
         className={classNames}
-        src={`${fullImageUrl}?width=750`}
+        src={`${fullImageUrl}&width=750`}
         alt={alt}
         loading={loading}
         width={width}
