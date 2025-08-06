@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
 import { getData } from "~/db/query";
 import { useLocalStorage } from "~/hooks/useLocalStorage";
+import type { Plant } from "~/components/types/SharedTypes.js";
 const EXPIRATION_MS = 1000 * 60 * 10;
 
 export function useGardenData() {
-  const [plants, setPlants] = useState([]);
+  const [allPlants, setAllPlants] = useState<Plant[]>([]);
   const { value, setValue } = useLocalStorage("gardenData", {
     data: {},
     timestamp: Date.now()
@@ -13,9 +14,9 @@ export function useGardenData() {
   const fetchGardenData = async () => {
     const data = await getData("garden?select=*");
     if (!data) {
-      throw new Response("Failed to get plants:", { status: 500 });
+      throw new Response("Failed to get plants:", { status: 404 });
     }
-    setPlants(data);
+    setAllPlants(data);
     setValue({ data, timestamp: Date.now() });
   };
 
@@ -25,13 +26,13 @@ export function useGardenData() {
       const now = Date.now();
 
       if (now - timestamp < EXPIRATION_MS) {
-        setPlants(data);
+        setAllPlants(data);
         return;
       }
     }
 
     fetchGardenData();
-  }, [plants]);
+  }, [allPlants]);
 
-  return { plants, setPlants };
+  return { allPlants, setAllPlants };
 }
