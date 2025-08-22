@@ -22,7 +22,7 @@ export function PlantCard({
   return (
     <Link
       to={href}
-      className="flex flex-col rounded-lg overflow-hidden border border-zinc-200"
+      className="flex flex-col rounded-lg overflow-hidden border border-zinc-200 starting:-translate-x-5 starting:opacity-0 delay-100 translate-x-0 opacity-100 transition-[opacity_transform]"
       prefetch="intent"
       viewTransition
     >
