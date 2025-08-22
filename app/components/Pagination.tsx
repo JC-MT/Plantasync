@@ -2,7 +2,6 @@ import { useGardenData } from "~/hooks/useGardenData";
 import { FILTERED_PLANT_INCREMENT } from "~/constants";
 import type { Plant, Search } from "~/components/types/SharedTypes.js";
 import { useLocation, useSearchParams, Form } from "react-router";
-import { isObjectValuesEmpty } from "~/utils/functions";
 
 export function Pagination({
   currentPlants,
@@ -21,17 +20,16 @@ export function Pagination({
   const { pathname, search } = useLocation();
   const [searchParams, setSearchParams] = useSearchParams();
   const limitParam = Number(searchParams.get("limit")) || filteredPlants;
-  const filterIsActive = isObjectValuesEmpty(currentSearch);
+  const filterIsActive = Object.values(currentSearch).some(
+    (value) => value.length > 0
+  );
   const allFilteredPlants = allPlants.filter((plant) =>
     filterFunction(plant, currentSearch)
   ).length;
 
-  const showLoadMore =
-    filterIsActive && filteredPlants < allFilteredPlants && filteredPlants
-      ? true
-      : currentPlants < allPlants.length && filteredPlants
-        ? true
-        : false;
+  const showLoadMore = filterIsActive
+    ? filteredPlants < allFilteredPlants
+    : currentPlants < allPlants.length;
 
   return (
     <div className="mt-10 grid place-self-center text-center">
@@ -54,7 +52,7 @@ export function Pagination({
           </button>
         </Form>
       )}
-      <p className="text-sm">
+      <p className="text-sm starting:opacity-0 delay-300 opacity-100">
         {currentPlants
           ? `Showing ${limitParam >= filteredPlants ? filteredPlants : limitParam} of ${allPlants.length} plants`
           : `No plants found`}
