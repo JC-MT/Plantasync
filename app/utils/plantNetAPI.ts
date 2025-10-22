@@ -6,7 +6,7 @@ export async function getScannerResults(formData: FormData) {
 
   try {
     const res = await fetch(
-      `${VITE_PLANT_NET_URL}?api-key=${VITE_PLANT_NET_KEY}`,
+      `${VITE_PLANT_NET_URL}&api-key=${VITE_PLANT_NET_KEY}`,
       {
         method: "POST",
         body: formData
