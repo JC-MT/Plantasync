@@ -29,18 +29,17 @@ export async function action({ request }: Route.ActionArgs) {
 
     if (intent === "scan") {
       const result = await getScannerResults(formData);
-      if (!result.ok) {
-        return new Response(JSON.stringify({ error: result.error }), {
-          status: 400,
+      return new Response(
+        JSON.stringify(!result.ok ? { error: result.error } : result),
+        {
+          status: result.ok ? 200 : 400,
           headers
-        });
-      }
-      return new Response(JSON.stringify(result), {
-        headers
-      });
+        }
+      );
     }
 
     if (intent === "add") {
+      // Remove image until image handling is implemented
       formData.delete("image");
       const data = Object.fromEntries(formData.entries());
 
@@ -48,21 +47,22 @@ export async function action({ request }: Route.ActionArgs) {
         const result = await postData("garden", data);
         return redirect("/plants/" + result[0].id);
       } catch (error) {
-        console.error("Error adding plant:", error);
+        console.error("Database error:", error);
         return new Response(
           JSON.stringify({
-            error: (error as Error).message || "Failed to add plant"
+            error: error || "Failed to add plant"
           }),
           { status: 400, headers }
         );
       }
     }
-
-    throw new Response("Invalid intent", { status: 400 });
+    return new Response(JSON.stringify({ error: "Invalid intent" }), {
+      status: 400,
+      headers
+    });
   } catch (error) {
     if (error instanceof Response) throw error;
 
-    console.error("Unexpected action error:", error);
     return new Response(JSON.stringify({ error: "Internal Server Error" }), {
       status: 500,
       headers
@@ -85,10 +85,11 @@ export default function Add() {
       <section className="grid md:grid-cols-[40%_auto] gap-5 md:gap-10">
         <Image
           imageUrl="planta_campaign.jpg?v=1735059317"
-          classNames="aspect-square md:aspect-auto object-[0%_42%] w-full h-auto rounded-lg object-cover bg-slate-300"
-          sizes="(min-width: 768px) 40vw, 90vw"
+          classNames="aspect-square md:aspect-auto object-[0%_42%] w-full h-auto rounded-lg object-cover bg-slate-300 shadow-md"
+          sizes="(min-width: 768px) 20vw, 90vw"
           alt="Planta campaign image"
-          loading="lazy"
+          loading="eager"
+          fetchpriority="high"
           isHero={false}
           width={1639}
           height={2458}
@@ -99,14 +100,15 @@ export default function Add() {
             <TabsTrigger value="form">Form</TabsTrigger>
             <TabsTrigger value="scan">Scanner</TabsTrigger>
           </TabsList>
-          <TabsContent value="form">
+          <TabsContent value="form" tabIndex={-1}>
             <InputForm />
           </TabsContent>
           <TabsContent
             value="scan"
             className="flex items-center justify-center"
+            tabIndex={-1}
           >
-            <Scanner className="grid w-full items-center gap-3" />
+            <Scanner className="grid gap-5 pr-5" />
           </TabsContent>
         </Tabs>
       </section>
