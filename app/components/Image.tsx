@@ -4,24 +4,26 @@ interface Props {
   imageUrl: string;
   sizes: string;
   alt: string;
-  isHero: boolean;
-  classNames: string;
-  loading: "lazy" | "eager";
+  isHero?: boolean;
+  classNames?: string;
+  loading?: "lazy" | "eager";
+  fetchpriority?: "high" | "low" | "auto";
   width: number;
   height: number;
-  viewTransition: number | undefined;
+  viewTransition?: number | undefined;
 }
 
 export function Image({
   imageUrl,
   sizes,
   alt,
+  width,
+  height,
   isHero = false,
   classNames = "",
   loading = "lazy",
-  width,
-  height,
-  viewTransition
+  fetchpriority = "auto",
+  viewTransition = undefined
 }: Props) {
   const fullImageUrl = `${VITE_IMAGE_CDN_URL}${imageUrl}`;
   return (
@@ -89,6 +91,7 @@ export function Image({
         loading={loading}
         width={width}
         height={height}
+        fetchPriority={fetchpriority}
         style={{
           viewTransitionName: `${
             viewTransition ? `plant-image-${viewTransition}` : "none"
