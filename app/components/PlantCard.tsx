@@ -22,12 +22,12 @@ export function PlantCard({
   return (
     <Link
       to={href}
-      className="flex flex-col rounded-lg overflow-hidden border border-zinc-200 starting:-translate-x-5 starting:opacity-0 delay-100 translate-x-0 opacity-100 transition-[opacity_transform]"
+      className="flex flex-col rounded-lg overflow-hidden border border-zinc-200 animate-slide-in-card delay-75"
       prefetch="intent"
       viewTransition
     >
       {children}
-      <div className="flex flex-col gap-1 p-2 bg-white flex-grow">
+      <div className="flex flex-col p-2 bg-white flex-grow">
         <h3
           style={{
             viewTransitionName: isTransitioning

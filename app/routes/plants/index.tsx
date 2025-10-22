@@ -3,6 +3,7 @@ import { getData } from "~/db/query.js";
 import { PlantCard } from "~/components/PlantCard.js";
 import { Image } from "~/components/Image.js";
 import PageContainer from "~/layout/PageContainer.js";
+import type { Plant } from '~/components/types/SharedTypes.js';
 
 export function meta() {
   return [
@@ -27,7 +28,7 @@ export default function Index() {
         My Plants
       </h1>
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 md:gap-4 lg:gap-6">
-        {plants.map((plant, idx: number) => (
+        {plants.map((plant: Plant, idx: number) => (
           <PlantCard key={idx} plant={plant}>
             <Image
               imageUrl="default_plant_image.jpg?v=1746612628"
