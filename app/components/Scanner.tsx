@@ -26,7 +26,7 @@ export default function Scanner({
     <section className="space-y-7 py-5 pl-5 bg-white rounded-lg shadow-md w-full self-start grid overflow-x-scroll">
       <fetcher.Form
         method="post"
-        action="/plants/add"
+        action="/add"
         encType="multipart/form-data"
         {...props}
       >

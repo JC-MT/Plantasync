@@ -60,7 +60,7 @@ export default function InputForm() {
   ) => {
     fetcher.submit(new FormData(event?.target as HTMLFormElement), {
       method: "post",
-      action: "/plants/add",
+      action: "/add",
       encType: "multipart/form-data"
     });
   };

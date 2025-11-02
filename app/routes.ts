@@ -16,8 +16,8 @@ export default [
     index("routes/plants/index.tsx"),
     route(":id", "routes/plants/plant.tsx"),
     route(":id/edit", "routes/plants/edit.tsx"),
-    route("add", "routes/plants/add.tsx")
   ]),
+  route("add", "routes/plants/add.tsx"),
   ...prefix("explore", [
     index("routes/explore/index.tsx"),
     route(":id", "routes/explore/plant.tsx")
