@@ -2,37 +2,41 @@ import { useEffect, useState } from "react";
 import { getData } from "~/db/query";
 import { useLocalStorage } from "~/hooks/useLocalStorage";
 import type { Plant } from "~/components/types/SharedTypes.js";
-const EXPIRATION_MS = 1000 * 60 * 10;
+import { LOCAL_STORAGE_EXPIRATION_MS } from "~/constants";
 
 export function useGardenData() {
   const [allPlants, setAllPlants] = useState<Plant[]>([]);
   const { value, setValue } = useLocalStorage("gardenData", {
-    data: {},
-    timestamp: Date.now()
+    data: [],
+    timestamp: 0
   });
 
-  const fetchGardenData = async () => {
-    const data = await getData("garden?select=*");
-    if (!data) {
-      throw new Response("Failed to get plants:", { status: 404 });
-    }
-    setAllPlants(data);
-    setValue({ data, timestamp: Date.now() });
+  const fetchGardenData = () => {
+    getData("garden?select=*")
+      .then((data) => {
+        const plants = data || [];
+        setAllPlants(plants);
+        setValue({ data: plants, timestamp: Date.now() });
+      })
+      .catch((error) => {
+        console.error("Failed to fetch garden data:", error);
+        setAllPlants([]);
+      });
   };
 
   useEffect(() => {
-    const { data, timestamp } = value;
-    if (data.length) {
-      const now = Date.now();
+    if (value?.data?.length && value?.timestamp) {
+      const isExpired =
+        Date.now() - value.timestamp > LOCAL_STORAGE_EXPIRATION_MS;
 
-      if (now - timestamp < EXPIRATION_MS) {
-        setAllPlants(data);
+      if (!isExpired) {
+        setAllPlants(value.data);
         return;
       }
     }
 
     fetchGardenData();
-  }, [allPlants]);
+  }, []);
 
-  return { allPlants, setAllPlants };
+  return { allPlants, setAllPlants, fetchGardenData };
 }
