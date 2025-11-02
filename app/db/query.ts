@@ -14,17 +14,21 @@ const defaultHeaders = {
  * @throws {Response} - Throws an error if the request fails
  */
 export const getData = async (query: string): Promise<any> => {
-  const res = await fetch(`${supabaseUrl}/rest/v1/${query}`, {
+  return fetch(`${supabaseUrl}/rest/v1/${query}`, {
     headers: {
       ...defaultHeaders
     }
-  });
-
-  if (!res.ok) {
-    throw new Response("Failed to get data:", { status: res.status });
-  }
-
-  return res.json();
+  })
+    .then((res) => {
+      if (res.ok) {
+        return res.json();
+      }
+    })
+    .catch((error) => {
+      throw new Response("Failed to get data:", {
+        status: error.status || 500
+      });
+    });
 };
 
 /**
