@@ -21,7 +21,7 @@ export function meta() {
 }
 
 export async function action({ request }: Route.ActionArgs) {
-  const headers = { "Content-Type": "application/json" };
+  const headers = new Headers({ "Content-Type": "application/json" });
   try {
     const formData = await request.formData();
     const intent = formData.get("intent");
@@ -96,7 +96,7 @@ export default function Add() {
           viewTransition={undefined}
         />
         <Tabs defaultValue="form">
-          <TabsList className="">
+          <TabsList>
             <TabsTrigger value="form">Form</TabsTrigger>
             <TabsTrigger value="scan">Scanner</TabsTrigger>
           </TabsList>
