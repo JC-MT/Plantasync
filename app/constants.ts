@@ -97,7 +97,11 @@ export const defaultSliderPlants: { name: string; origin: string }[] = [
   }
 ];
 
-export const navLinks: { name: string; to: string; attributes?: { [key: string]: string } }[] = [
+export const navLinks: {
+  name: string;
+  to: string;
+  attributes?: { [key: string]: string };
+}[] = [
   {
     name: "Demo Plants",
     to: "/plants"
@@ -108,11 +112,17 @@ export const navLinks: { name: string; to: string; attributes?: { [key: string]:
   },
   {
     name: "Sign up",
-    to: "/register"
+    to: "/register",
+    attributes: {
+      end: ""
+    }
   },
   {
     name: "Add Plants",
-    to: "/plants/add"
+    to: "/add",
+    attributes: {
+      end: ""
+    }
   },
   {
     name: "Source Code",
@@ -120,9 +130,12 @@ export const navLinks: { name: string; to: string; attributes?: { [key: string]:
     attributes: {
       target: "_blank",
       rel: "noopener noreferrer",
-      "aria-label": "GitHub repository for Plantasync"
+      "aria-label": "GitHub repository for Plantasync",
+      end: ""
     }
   }
 ];
 
 export const FILTERED_PLANT_INCREMENT = 10;
+
+export const LOCAL_STORAGE_EXPIRATION_MS = 1000 * 60 * 10;

@@ -24,7 +24,6 @@ export function Navbar() {
               }}
               {...link?.attributes}
               prefetch="intent"
-              end
             >
               {link.name}
             </NavLink>
@@ -53,7 +52,6 @@ export function Navbar() {
                       {...link?.attributes}
                       prefetch="viewport"
                       onClick={() => setIsOpen(false)}
-                      end
                     >
                       {link.name}
                     </NavLink>
