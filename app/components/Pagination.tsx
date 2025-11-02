@@ -1,7 +1,9 @@
+import { Button } from "./ui/button";
+import { Spinner } from "./ui/spinner";
 import { useGardenData } from "~/hooks/useGardenData";
 import { FILTERED_PLANT_INCREMENT } from "~/constants";
+import { useSearchParams, Form, useNavigation } from "react-router";
 import type { Plant, Search } from "~/components/types/SharedTypes.js";
-import { useLocation, useSearchParams, Form } from "react-router";
 
 export function Pagination({
   currentPlants,
@@ -16,8 +18,8 @@ export function Pagination({
   setSearch: (search: Search) => void;
   currentSearch: Search;
 }) {
+  const navigation = useNavigation();
   const { allPlants } = useGardenData();
-  const { pathname, search } = useLocation();
   const [searchParams, setSearchParams] = useSearchParams();
   const limitParam = Number(searchParams.get("limit")) || filteredPlants;
   const filterIsActive = Object.values(currentSearch).some(
@@ -32,9 +34,13 @@ export function Pagination({
     : currentPlants < allPlants.length;
 
   return (
-    <div className="mt-10 grid place-self-center text-center">
+    <div className="mt-7 mb-2 grid gap-2 place-self-center text-center">
       {showLoadMore && (
-        <Form method="post" action={pathname + search} preventScrollReset>
+        <Form
+          method="post"
+          action={`/explore?${searchParams}`}
+          preventScrollReset
+        >
           <input
             type="hidden"
             name="limit"
@@ -44,31 +50,46 @@ export function Pagination({
             }
           />
           <input type="hidden" name="plantsExist" value={allPlants.length} />
-          <button
+          <Button
             type="submit"
-            className="mb-4 px-8 py-2 rounded-full hover:cursor-pointer bg-dark-green/5 hover:bg-dark-green hover:text-light-green text-xl font-medium text-dark-green"
+            className="text-xl/none min-w-40 font-semibold starting:opacity-0 delay-300 opacity-100"
+            disabled={navigation.formAction === "/explore"}
           >
-            Load More
-          </button>
+            {navigation.formAction === "/explore" ? (
+              <>
+                <Spinner />
+                Loading...
+              </>
+            ) : (
+              "Load More"
+            )}
+          </Button>
         </Form>
+      )}
+      {!filteredPlants && (
+        <Button
+          type="submit"
+          className="text-xl/none min-w-40 font-semibold starting:opacity-0 delay-300 opacity-100"
+          disabled={navigation.formAction === "/explore"}
+          onClick={() => {
+            setSearchParams({});
+            setSearch({ name: "", climate: "", ideal_light: "" });
+          }}
+        >
+          {navigation.formAction === "/explore" ? (
+            <>
+              <Spinner />
+              Resetting...
+            </>
+          ) : (
+            "Reset Search"
+          )}
+        </Button>
       )}
       <p className="text-sm starting:opacity-0 delay-300 opacity-100">
         {currentPlants
           ? `Showing ${limitParam >= filteredPlants ? filteredPlants : limitParam} of ${allPlants.length} plants`
           : `No plants found`}
-
-        {!filteredPlants ? (
-          <button
-            type="button"
-            className="mb-4 px-4 py-1 rounded-full hover:cursor-pointer bg-dark-green/5 hover:bg-dark-green hover:text-light-green text-xl font-medium text-dark-green"
-            onClick={() => {
-              setSearchParams({});
-              setSearch({ name: "", climate: "", ideal_light: "" });
-            }}
-          >
-            Reset Search
-          </button>
-        ) : null}
       </p>
     </div>
   );
