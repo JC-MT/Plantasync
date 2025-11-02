@@ -1,3 +1,6 @@
+import { useEffect } from "react";
+import { useLocation } from "react-router";
+import { useGardenData } from "~/hooks/useGardenData.js";
 import PlantDetails from "~/components/PlantDetails.js";
 import PageContainer from "~/layout/PageContainer.js";
 import { getData } from "../../db/query.js";
@@ -22,6 +25,15 @@ export function meta({ data }: { data: any }) {
 }
 
 export default function Detail({ loaderData }: { loaderData: any }) {
+  const location = useLocation();
+  const { fetchGardenData } = useGardenData();
+  
+  useEffect(() => {
+    if(location.state?._isRedirect) {
+      fetchGardenData();
+    }
+  }, []);
+  
   return (
     <PageContainer>
       <PlantDetails plant={loaderData} />
