@@ -3,13 +3,13 @@ import { useEffect, useState } from "react";
 import { Image } from "~/components/Image.js";
 import { includesTerm } from "~/utils/functions";
 import { Filter } from "../../components/Filter";
+import { useGardenData } from "~/hooks/useGardenData";
 import PageContainer from "~/layout/PageContainer.js";
 import { PlantCard } from "~/components/PlantCard.js";
 import { gardenDataExists } from "~/cookies.server.js";
 import { FILTERED_PLANT_INCREMENT } from "~/constants";
 import { Pagination } from "../../components/Pagination";
 import { redirect, useSearchParams } from "react-router";
-import { useLocalStorage } from "~/hooks/useLocalStorage.js";
 import type {
   LoaderData,
   Plant,
@@ -63,7 +63,7 @@ export async function action({ request }: { request: Request }) {
 export default function Index({ loaderData }: { loaderData: LoaderData }) {
   const [searchParams] = useSearchParams();
   const [plants, setPlants] = useState<Plant[]>([]);
-  const { value } = useLocalStorage("gardenData", {});
+  const { allPlants } = useGardenData();
   const [search, setSearch] = useState<Search>({
     name: "",
     climate: "",
@@ -84,15 +84,15 @@ export default function Index({ loaderData }: { loaderData: LoaderData }) {
   useEffect(() => {
     if (loaderData?.catchedData) {
       setPlants(
-        value?.data.slice(
+        allPlants?.slice(
           0,
-          searchParams.get("limit") || FILTERED_PLANT_INCREMENT
+          Number(searchParams.get("limit") || FILTERED_PLANT_INCREMENT)
         )
       );
     } else {
       setPlants(loaderData.data || []);
     }
-  }, [loaderData, value]);
+  }, [loaderData, allPlants]);
 
   useEffect(() => {
     setSearch({
