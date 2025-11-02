@@ -31,7 +31,7 @@ export function SliderCard({
         </div>
         <fetcher.Form
           method="post"
-          action="/plants/add"
+          action="/add"
           encType="multipart/form-data"
         >
           <input type="hidden" name="intent" value="add" />
