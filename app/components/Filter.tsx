@@ -43,7 +43,7 @@ export function Filter({ search, setSearch }: Props) {
       <Input
         type="text"
         placeholder="Type a plant name..."
-        className="text-dark-green"
+        className="text-dark-green bg-white"
         value={search.name}
         name="name"
         onChange={handleChange}
