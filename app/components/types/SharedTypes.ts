@@ -6,6 +6,9 @@ export interface Plant {
   name: string;
   category: string;
   ideal_light: string;
+  last_water: Date;
+  last_rotated: Date;
+  last_skipped: Date;
 }
 
 export interface LoaderData {
@@ -17,4 +20,11 @@ export interface Search {
   name: string;
   climate: string;
   ideal_light: string;
+}
+
+export interface Action {
+  type: string;
+  plant_id: number;
+  id: number;
+  created_at: Date;
 }
