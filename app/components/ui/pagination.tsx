@@ -53,7 +53,7 @@ function PaginationLink({
       aria-current={isActive ? "page" : undefined}
       data-slot="pagination-link"
       data-active={isActive}
-      variant={isActive ? 'outline' : 'ghost'}
+      variant={isActive ? 'default' : 'ghost'}
       {...props}
     />
   );
