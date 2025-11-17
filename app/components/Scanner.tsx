@@ -1,4 +1,4 @@
-import Slider from "./Slider";
+import { Slider } from "./Slider";
 import { Spinner } from "./ui/spinner";
 import { useFetcher } from "react-router";
 import { SliderCard } from "./SliderCard";
@@ -7,7 +7,7 @@ import { Label } from "../components/ui/label";
 const { VITE_IMAGE_CDN_URL } = import.meta.env;
 import { Button } from "../components/ui/button";
 import { defaultSliderPlants } from "~/constants";
-import { capitalizeFirstLetters } from "~/utils/functions";
+import { capitalizeFirstLetters } from "~/utils";
 
 interface Result {
   species: {
@@ -26,7 +26,7 @@ export default function Scanner({
     <section className="space-y-7 py-5 pl-5 bg-white rounded-lg shadow-md w-full self-start grid overflow-x-scroll">
       <fetcher.Form
         method="post"
-        action="/add"
+        action="/api/scan"
         encType="multipart/form-data"
         {...props}
       >
@@ -37,7 +37,6 @@ export default function Scanner({
             Required: Please add an image of the plant you want to scan.
           </p>
         </div>
-        <input type="hidden" name="intent" value="scan" />
         <Button
           className="max-w-32 font-semibold"
           type="submit"

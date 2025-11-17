@@ -1,6 +1,8 @@
+import type { Route } from "./+types/scanner";
 const { VITE_PLANT_NET_KEY, VITE_PLANT_NET_URL } = import.meta.env;
 
-export async function getScannerResults(formData: FormData) {
+export async function action({ request }: Route.ActionArgs) {
+  const formData = await request.formData();
   if (!formData.get("images"))
     return { ok: false, error: "No image file provided." };
 

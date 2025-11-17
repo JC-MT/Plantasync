@@ -21,5 +21,6 @@ export default [
   ...prefix("explore", [
     index("routes/explore/index.tsx"),
     route(":id", "routes/explore/plant.tsx")
-  ])
+  ]),
+  route("api/scan", "routes/api/scanner.ts")
 ] satisfies RouteConfig;

@@ -34,7 +34,6 @@ export function SliderCard({
           action="/add"
           encType="multipart/form-data"
         >
-          <input type="hidden" name="intent" value="add" />
           <input type="hidden" name="name" value={name} />
           <input type="hidden" name="image" value={imageUrl} />
           <Button
