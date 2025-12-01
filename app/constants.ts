@@ -47,13 +47,39 @@ export const lights: { label: string; value: string }[] = [
 export const categories: { label: string; value: string }[] = [
   { label: "Aroids (Tropical Foliage)", value: "tropical-foliage" },
   { label: "Succulents", value: "succulents" },
-  { label: "Cacti", value: "cacti" },
+  { label: "Cactus", value: "cactus" },
   { label: "Ferns & Mosses", value: "ferns-mosses" },
   { label: "Indoor Trees & Ficus", value: "indoor-trees" },
   { label: "Palms & Cane Plants", value: "palms-cane" },
   { label: "Flowering Plants", value: "flowering" },
   { label: "Low-Light Plants", value: "low-light" },
   { label: "Other", value: "other" }
+];
+
+export const actionButtons: {
+  key: "last_water" | "last_rotated" | "last_skipped";
+  value: "watered" | "rotated" | "skipped";
+  text: { complete: string; idle: string};
+  taskKey: "wateredToday" | "rotatedToday" | "skippedToday";
+}[] = [
+  {
+    key: "last_water",
+    value: "watered",
+    text: { complete: "Watered", idle: "Water" },
+    taskKey: "wateredToday"
+  },
+  {
+    key: "last_rotated",
+    value: "rotated",
+    text: { complete: "Rotated", idle: "Rotate" },
+    taskKey: "rotatedToday"
+  },
+  {
+    key: "last_skipped",
+    value: "skipped",
+    text: { complete: "Skipped", idle: "Skip" },
+    taskKey: "skippedToday"
+  }
 ];
 
 export const healthStatuses: {
@@ -139,3 +165,6 @@ export const navLinks: {
 export const FILTERED_PLANT_INCREMENT = 10;
 
 export const LOCAL_STORAGE_EXPIRATION_MS = 1000 * 60 * 10;
+
+export const ACTION_PAGINATION_INCREMENT = 5;
+
