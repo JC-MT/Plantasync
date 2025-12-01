@@ -3,7 +3,6 @@ import InputForm from "../../components/InputForm";
 import Scanner from "../../components/Scanner";
 import PageContainer from "~/layout/PageContainer.js";
 import { Image } from "../../components/Image";
-import { getScannerResults } from "../../utils/plantNetAPI";
 import { postData } from "../../db/query";
 import type { Route } from "./+types/add";
 import {
@@ -21,52 +20,12 @@ export function meta() {
 }
 
 export async function action({ request }: Route.ActionArgs) {
-  const headers = new Headers({ "Content-Type": "application/json" });
   try {
-    const formData = await request.formData();
-    const intent = formData.get("intent");
-    formData.delete("intent");
-
-    if (intent === "scan") {
-      const result = await getScannerResults(formData);
-      return new Response(
-        JSON.stringify(!result.ok ? { error: result.error } : result),
-        {
-          status: result.ok ? 200 : 400,
-          headers
-        }
-      );
-    }
-
-    if (intent === "add") {
-      // Remove image until image handling is implemented
-      formData.delete("image");
-      const data = Object.fromEntries(formData.entries());
-
-      try {
-        const result = await postData("garden", data);
-        return redirect("/plants/" + result[0].id);
-      } catch (error) {
-        console.error("Database error:", error);
-        return new Response(
-          JSON.stringify({
-            error: error || "Failed to add plant"
-          }),
-          { status: 400, headers }
-        );
-      }
-    }
-    return new Response(JSON.stringify({ error: "Invalid intent" }), {
-      status: 400,
-      headers
-    });
+    const data = await request.formData();
+    const result = await postData("garden", Object.fromEntries(data.entries()));
+    return redirect("/plants/" + result[0].id);
   } catch (error) {
-    if (error instanceof Response) throw error;
-
-    return new Response(JSON.stringify({ error: "Internal Server Error" }), {
-      status: 500,
-      headers
-    });
+    return new Response(`error: ${error || "Failed to add plant"}`, { status: 400 });
   }
 }
 
