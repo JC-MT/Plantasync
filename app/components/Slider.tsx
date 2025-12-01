@@ -1,4 +1,4 @@
-export default function Slider({ title, children }: React.PropsWithChildren<{ title: string }>) {
+export function Slider({ title, children }: React.PropsWithChildren<{ title: string }>) {
   return (
     <>
       <h3 className="font-semibold text-primary m-0">{title}</h3>
