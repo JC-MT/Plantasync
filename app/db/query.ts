@@ -1,5 +1,6 @@
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
 const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+import type { Plant, Action } from "~/components/types/SharedTypes.js";
 
 const defaultHeaders = {
   apikey: supabaseKey,
@@ -10,19 +11,39 @@ const defaultHeaders = {
 /**
  * Fetch data from Supabase
  * @param {string} query - The query string to fetch data
+ * @param {object} options - Additional options for the request
  * @returns {Promise<any>} - The fetched data
  * @throws {Response} - Throws an error if the request fails
  */
-export const getData = async (query: string): Promise<any> => {
+export const getData = async (
+  query: string,
+  options: { estimatedCount?: boolean } = {}
+): Promise<any> => {
+  const headers: Record<string, string> = { ...defaultHeaders };
+
+  if (options.estimatedCount) {
+    headers["Prefer"] = "count=estimated";
+  }
+
   return fetch(`${supabaseUrl}/rest/v1/${query}`, {
-    headers: {
-      ...defaultHeaders
-    }
+    headers
   })
     .then((res) => {
       if (res.ok) {
+        if (options.estimatedCount) {
+          return res.json().then((data) => {
+            const contentRange = res.headers.get("content-range");
+            const totalCount = contentRange
+              ? parseInt(contentRange.split("/")[1])
+              : null;
+            return { data, count: totalCount };
+          });
+        }
         return res.json();
       }
+      throw new Response("Failed to get data:", {
+        status: res.status
+      });
     })
     .catch((error) => {
       throw new Response("Failed to get data:", {
@@ -35,13 +56,13 @@ export const getData = async (query: string): Promise<any> => {
  * Post data to Supabase
  * @param {string} query - The query string to post data
  * @param {Record<string, any>} body - The data to post
- * @returns {Promise<any>} - The posted data
+ * @returns {Promise<Plant[] | Action[]>} - The posted data
  * @throws {Response} - Throws an error if the request fails
  */
 export const postData = async (
   query: string,
   body: Record<string, any>
-): Promise<any> => {
+): Promise<Plant[] | Action[]> => {
   const res = await fetch(`${supabaseUrl}/rest/v1/${query}`, {
     method: "POST",
     headers: {
