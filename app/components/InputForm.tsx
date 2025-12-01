@@ -107,7 +107,7 @@ export default function InputForm() {
                 onValueChange={field.onChange}
               >
                 <SelectTrigger
-                  id="form-rhf-select-language"
+                  id="form-rhf-select-category"
                   aria-invalid={fieldState.invalid}
                   className="min-w-32 w-full hover:cursor-pointer hover:bg-accent hover:text-primary"
                 >
@@ -158,6 +158,11 @@ export default function InputForm() {
                           <span>Pick a date</span>
                         )}
                         <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                        <Input
+                          type="hidden"
+                          name={field.name}
+                          value={field.value ? field.value.toISOString() : ""}
+                        />
                       </Button>
                     </FormControl>
                   </PopoverTrigger>
@@ -232,7 +237,6 @@ export default function InputForm() {
             </FormItem>
           )}
         />
-        <Input type="hidden" name="intent" value="add" />
         <div className="flex gap-2">
           <Button
             type="button"
