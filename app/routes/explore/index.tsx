@@ -8,7 +8,7 @@ import PageContainer from "~/layout/PageContainer.js";
 import { PlantCard } from "~/components/PlantCard.js";
 import { gardenDataExists } from "~/cookies.server.js";
 import { FILTERED_PLANT_INCREMENT } from "~/constants";
-import { Pagination } from "../../components/Pagination";
+import { LoadMore } from "../../components/LoadMore";
 import { redirect, useSearchParams } from "react-router";
 import type {
   LoaderData,
@@ -129,7 +129,7 @@ export default function Index({ loaderData }: { loaderData: LoaderData }) {
             </PlantCard>
           ))}
       </div>
-      <Pagination
+      <LoadMore
         currentPlants={plants.length}
         filteredPlants={
           plants.filter((plant) => matchesSearchTerm(plant, search)).length
