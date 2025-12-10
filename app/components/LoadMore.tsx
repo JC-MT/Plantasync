@@ -5,12 +5,12 @@ import { FILTERED_PLANT_INCREMENT } from "~/constants";
 import { useSearchParams, Form, useNavigation } from "react-router";
 import type { Plant, Search } from "~/components/types/SharedTypes.js";
 
-export function Pagination({
+export function LoadMore({
   currentPlants,
   filteredPlants,
   filterFunction,
   setSearch,
-  currentSearch
+  currentSearch,
 }: {
   currentPlants: number;
   filteredPlants: number;
@@ -66,10 +66,10 @@ export function Pagination({
           </Button>
         </Form>
       )}
-      {!filteredPlants && (
+      {!filteredPlants && filterIsActive && !showLoadMore && (
         <Button
           type="submit"
-          className="text-xl/none min-w-40 font-semibold starting:opacity-0 delay-300 opacity-100"
+          className="text-xl/none min-w-40 font-semibold"
           disabled={navigation.formAction === "/explore"}
           onClick={() => {
             setSearchParams({});
@@ -86,10 +86,10 @@ export function Pagination({
           )}
         </Button>
       )}
-      <p className="text-sm starting:opacity-0 delay-300 opacity-100">
-        {currentPlants
-          ? `Showing ${limitParam >= filteredPlants ? filteredPlants : limitParam} of ${allPlants.length} plants`
-          : `No plants found`}
+      <p className="text-base starting:opacity-0 delay-300 opacity-100 font-medium">
+        {filteredPlants || showLoadMore
+          ? `Showing ${limitParam >= filteredPlants ? filteredPlants : limitParam} of ${allPlants.length} Plants`
+          : `No Plants Found`}
       </p>
     </div>
   );
