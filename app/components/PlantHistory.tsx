@@ -11,11 +11,11 @@ import {
   PaginationItem,
   PaginationLink,
   PaginationNext,
-  PaginationPrevious
+  PaginationPrevious,
 } from "./ui/pagination";
 
 export function PlantHistory({
-  actions
+  actions,
 }: {
   actions: Promise<{ results: Action[]; count: number }>;
 }) {
@@ -35,15 +35,13 @@ export function PlantHistory({
     if (param !== "page") params.delete("page");
 
     setSearchParams(params, {
-      preventScrollReset: true
+      preventScrollReset: true,
     });
   };
-  
+
   const buildPages = (resolvedActions: Action[], count: number) => {
     if (!resolvedActions) return null;
-    const totalPages = Math.ceil(
-      count / ACTION_PAGINATION_INCREMENT
-    );
+    const totalPages = Math.ceil(count / ACTION_PAGINATION_INCREMENT);
     setTotalPages(totalPages);
     const paginationItems = [];
     const [start, end] = [
@@ -54,7 +52,7 @@ export function PlantHistory({
       Math.max(
         currentPage + Math.ceil(ACTION_PAGINATION_INCREMENT / 2),
         currentPage + 1
-      )
+      ),
     ];
 
     for (let page = 1; page <= totalPages; page++) {
@@ -98,37 +96,43 @@ export function PlantHistory({
           })}
         </div>
       </div>
-      <div className="flex flex-col divide-y divide-zinc-200 gap-2">
-        <Suspense
-          fallback={
-            <div className="flex gap-2 items-center">
-              <Spinner /> Loading...
-            </div>
-          }
-        >
-          <Await resolve={actions}>
-            {({ results }) => {
-              return results.map((action, idx) => (
-                <div
-                  key={idx}
-                  className="flex items-center justify-between"
-                >
-                  <p className="capitalize text-left text-base font-semibold text-dark-green">
-                    {action.type}
-                  </p>
-                  <p>
-                    {new Date(action.created_at).toLocaleDateString(undefined, {
-                      year: "numeric",
-                      month: "long",
-                      day: "numeric"
-                    })}
-                  </p>
-                </div>
-              ))
-            }}
-          </Await>
-        </Suspense>
-      </div>
+      <Suspense
+        fallback={
+          <div className="flex gap-2 items-center">
+            <Spinner /> Loading...
+          </div>
+        }
+      >
+        <Await resolve={actions}>
+          {({ results }) => {
+            return results.length ? (
+              <div className="flex flex-col divide-y divide-zinc-200 gap-2 min-h-[156px]">
+                {results.map((action, idx) => (
+                  <div key={idx} className="flex items-center justify-between">
+                    <p className="capitalize text-left text-base font-semibold text-dark-green">
+                      {action.type}
+                    </p>
+                    <p>
+                      {new Date(action.created_at).toLocaleDateString(
+                        undefined,
+                        {
+                          year: "numeric",
+                          month: "long",
+                          day: "numeric",
+                        }
+                      )}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p className="text-center text-base font-medium my-5">
+                No Actions Found
+              </p>
+            );
+          }}
+        </Await>
+      </Suspense>
       <Await resolve={actions}>
         {({ results, count }) => (
           <Pagination>
@@ -145,7 +149,9 @@ export function PlantHistory({
                 />
               </PaginationItem>
               {buildPages(results, count)}
-              {results.length && currentPage < totalPages - 1 ? (
+              {results.length &&
+              currentPage < totalPages - 1 &&
+              totalPages > 3 ? (
                 <PaginationItem>
                   <PaginationEllipsis />
                 </PaginationItem>

@@ -67,7 +67,7 @@ export async function loader({
   const searchParams = new URL(request.url).searchParams;
   const page = Number(searchParams.get("page")) || 1;
   const actionsPromise = getData(
-    `actions?plant_id=eq.${params.id}${searchParams.get("filter") ? `&type=eq.${searchParams.get("filter")}` : ""}&limit=${page * 5}&offset=${page > 1 ? (page - 1) * 5 : 0}`,
+    `actions?plant_id=eq.${params.id}${searchParams.get("filter") ? `&type=eq.${searchParams.get("filter")}` : ""}&limit=5&offset=${page > 1 ? (page - 1) * 5 : 0}`,
     { estimatedCount: true }
   )
     .then((result) => {
