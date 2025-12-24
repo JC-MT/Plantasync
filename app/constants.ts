@@ -57,28 +57,34 @@ export const categories: { label: string; value: string }[] = [
 ];
 
 export const actionButtons: {
-  key: "last_water" | "last_rotated" | "last_skipped";
-  value: "watered" | "rotated" | "skipped";
+  key: "last_water" | "last_rotated" | "last_skipped" | "last_fertilized";
+  value: "watered" | "rotated" | "skipped" | "fertilized";
   text: { complete: string; idle: string};
-  taskKey: "wateredToday" | "rotatedToday" | "skippedToday";
+  img: string;
 }[] = [
   {
     key: "last_water",
     value: "watered",
     text: { complete: "Watered", idle: "Water" },
-    taskKey: "wateredToday"
+    img: "https://cdn-icons-png.flaticon.com/512/2514/2514435.png"
   },
   {
     key: "last_rotated",
     value: "rotated",
     text: { complete: "Rotated", idle: "Rotate" },
-    taskKey: "rotatedToday"
+    img: "https://cdn-icons-png.flaticon.com/512/545/545682.png"
   },
   {
     key: "last_skipped",
     value: "skipped",
     text: { complete: "Skipped", idle: "Skip" },
-    taskKey: "skippedToday"
+    img: "https://cdn-icons-png.flaticon.com/512/2961/2961937.png"
+  },
+  {
+    key: "last_fertilized",
+    value: "fertilized",
+    text: { complete: "Fertilized", idle: "Fertilize" },
+    img: "https://cdn-icons-png.flaticon.com/512/2961/2961937.png"
   }
 ];
 

@@ -37,9 +37,6 @@ export function isReadyForWatering(plantType: string, lastWateredDate: Date) {
     nextWateringInDays: plantNeedsWatering
       ? 0
       : getGeneralWateringInterval(plantType) - daysSinceLastWatered,
-    pastDue: plantNeedsWatering
-      ? daysSinceLastWatered - getGeneralWateringInterval(plantType)
-      : 0
   };
 }
 
