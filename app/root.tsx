@@ -41,7 +41,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
       </head>
       <body className="antialiased bg-light-theme">
         <Navbar />
-        <main className="min-h-(--main-height)">{children}</main>
+        <main>{children}</main>
         <Footer />
         <ScrollRestoration />
         <Scripts />

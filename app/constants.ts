@@ -1,85 +1,91 @@
 export const climates: { label: string; value: string }[] = [
   {
     value: "tropical",
-    label: "Tropical"
+    label: "Tropical",
   },
   {
     value: "temperate",
-    label: "Temperate"
+    label: "Temperate",
   },
   {
     value: "dry",
-    label: "Dry"
+    label: "Dry",
   },
   {
     value: "humid",
-    label: "Humid"
+    label: "Humid",
   },
   {
     value: "subtropical",
-    label: "Subtropical"
+    label: "Subtropical",
   },
   {
     value: "continental",
-    label: "Continental"
-  }
+    label: "Continental",
+  },
 ];
 
 export const lights: { label: string; value: string }[] = [
   {
     value: "direct",
-    label: "Direct"
+    label: "Direct",
   },
   {
     value: "partial",
-    label: "Partial"
+    label: "Partial",
   },
   {
     value: "indirect",
-    label: "Indirect"
+    label: "Indirect",
   },
   {
     value: "shade",
-    label: "Shade"
-  }
+    label: "Shade",
+  },
 ];
 
 export const categories: { label: string; value: string }[] = [
-  { label: "Aroids (Tropical Foliage)", value: "tropical-foliage" },
-  { label: "Succulents", value: "succulents" },
-  { label: "Cactus", value: "cactus" },
-  { label: "Ferns & Mosses", value: "ferns-mosses" },
-  { label: "Indoor Trees & Ficus", value: "indoor-trees" },
-  { label: "Palms & Cane Plants", value: "palms-cane" },
-  { label: "Flowering Plants", value: "flowering" },
-  { label: "Low-Light Plants", value: "low-light" },
-  { label: "Other", value: "other" }
+  { label: "Aroids (Tropical Foliage)", value: "Aroids (Tropical Foliage)" },
+  { label: "Succulents", value: "Succulents" },
+  { label: "Cactus", value: "Cactus" },
+  { label: "Ferns & Mosses", value: "Ferns & Mosses" },
+  { label: "Indoor Trees & Ficus", value: "Indoor Trees & Ficus" },
+  { label: "Palms & Cane Plants", value: "Palms & Cane Plants" },
+  { label: "Flowering Plants", value: "Flowering Plants" },
+  { label: "Low-Light Plants", value: "Low-Light Plants" },
+  { label: "Other", value: "Other" },
 ];
 
 export const actionButtons: {
-  key: "last_water" | "last_rotated" | "last_skipped";
-  value: "watered" | "rotated" | "skipped";
-  text: { complete: string; idle: string};
-  taskKey: "wateredToday" | "rotatedToday" | "skippedToday";
+  key: "last_water" | "last_rotated" | "last_skipped" | "last_fertilized";
+  value: "watered" | "rotated" | "skipped" | "fertilized";
+  text: { complete: string; idle: string };
+  img: string;
 }[] = [
   {
     key: "last_water",
     value: "watered",
     text: { complete: "Watered", idle: "Water" },
-    taskKey: "wateredToday"
+    img: "https://cdn-icons-png.flaticon.com/512/2514/2514435.png",
   },
   {
     key: "last_rotated",
     value: "rotated",
     text: { complete: "Rotated", idle: "Rotate" },
-    taskKey: "rotatedToday"
+    img: "https://cdn-icons-png.flaticon.com/512/545/545682.png",
   },
   {
     key: "last_skipped",
     value: "skipped",
     text: { complete: "Skipped", idle: "Skip" },
-    taskKey: "skippedToday"
-  }
+    img: "https://cdn-icons-png.flaticon.com/512/2961/2961937.png",
+  },
+  {
+    key: "last_fertilized",
+    value: "fertilized",
+    text: { complete: "Fertilized", idle: "Fertilize" },
+    img: "https://cdn-icons-png.flaticon.com/512/2961/2961937.png",
+  },
 ];
 
 export const healthStatuses: {
@@ -90,37 +96,37 @@ export const healthStatuses: {
   {
     label: "Healthy",
     value: "healthy",
-    description: "Plant is in excellent condition with vigorous growth"
+    description: "Plant is in excellent condition with vigorous growth",
   },
   {
     label: "Okay",
     value: "okay",
-    description: "Plant is stable but may need attention or care adjustments"
+    description: "Plant is stable but may need attention or care adjustments",
   },
   {
     label: "Dying",
     value: "dying",
-    description: "Plant is in poor condition and requires immediate care"
-  }
+    description: "Plant is in poor condition and requires immediate care",
+  },
 ];
 
 export const defaultSliderPlants: { name: string; origin: string }[] = [
   {
     name: "Snake Plant",
-    origin: "West Africa"
+    origin: "West Africa",
   },
   {
     name: "Peace Lily",
-    origin: "West Africa"
+    origin: "West Africa",
   },
   {
     name: "Golden Pothos",
-    origin: "West Africa"
+    origin: "West Africa",
   },
   {
     name: "Fiddle Leaf Fig",
-    origin: "West Africa"
-  }
+    origin: "West Africa",
+  },
 ];
 
 export const navLinks: {
@@ -130,25 +136,25 @@ export const navLinks: {
 }[] = [
   {
     name: "Demo Plants",
-    to: "/plants"
+    to: "/plants",
   },
   {
     name: "Explore Plants",
-    to: "/explore"
+    to: "/explore",
   },
   {
     name: "Sign up",
     to: "/register",
     attributes: {
-      end: ""
-    }
+      end: "",
+    },
   },
   {
     name: "Add Plants",
     to: "/add",
     attributes: {
-      end: ""
-    }
+      end: "",
+    },
   },
   {
     name: "Source Code",
@@ -157,9 +163,9 @@ export const navLinks: {
       target: "_blank",
       rel: "noopener noreferrer",
       "aria-label": "GitHub repository for Plantasync",
-      end: ""
-    }
-  }
+      end: "",
+    },
+  },
 ];
 
 export const FILTERED_PLANT_INCREMENT = 10;
@@ -167,4 +173,3 @@ export const FILTERED_PLANT_INCREMENT = 10;
 export const LOCAL_STORAGE_EXPIRATION_MS = 1000 * 60 * 10;
 
 export const ACTION_PAGINATION_INCREMENT = 5;
-
