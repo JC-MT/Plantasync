@@ -73,11 +73,11 @@ export function PlantHistory({
   };
 
   return (
-    <div className="grid gap-3">
+    <div className="grid gap-5">
       <div className="flex flex-col md:flex-row gap-3">
         <h2 className="font-bold text-2xl/none md:text-3xl/none">History</h2>
         <div className="grid grid-cols-2 md:flex md:flex-wrap gap-1 md:gap-2">
-          {["Updated", "Skipped", "Rotated", "Watered"].map((button, idx) => {
+          {["Watered", "Rotated", "Skipped", "Fertilized"].map((button, idx) => {
             return (
               <Button
                 variant={
@@ -106,7 +106,7 @@ export function PlantHistory({
         <Await resolve={actions}>
           {({ results }) => {
             return results.length ? (
-              <div className="flex flex-col divide-y divide-zinc-200 gap-2 min-h-[156px]">
+              <div className="flex flex-col divide-y divide-zinc-200 gap-2">
                 {results.map((action, idx) => (
                   <div key={idx} className="flex items-center justify-between">
                     <p className="capitalize text-left text-base font-semibold text-dark-green">
@@ -126,7 +126,7 @@ export function PlantHistory({
                 ))}
               </div>
             ) : (
-              <p className="text-center text-base font-medium my-5">
+              <p className="text-center text-base font-medium">
                 No Actions Found
               </p>
             );

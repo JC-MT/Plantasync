@@ -23,7 +23,7 @@ export default function Scanner({
   const fetcher = useFetcher();
 
   return (
-    <section className="space-y-7 py-5 pl-5 bg-white rounded-lg shadow-md w-full self-start grid overflow-x-scroll">
+    <section className="space-y-7 py-4 pl-4 bg-white rounded-lg shadow-md w-full self-start grid overflow-x-scroll">
       <fetcher.Form
         method="post"
         action="/api/scan"
@@ -66,7 +66,7 @@ export default function Scanner({
               ))}
             </Slider>
           ) : (
-            <div className="p-4 border rounded mr-5">
+            <div className="p-4 border rounded mr-4">
               <h3 className="font-semibold text-red-600">Error:</h3>
               <p className="text-red-500">{fetcher.data.error}</p>
               {fetcher.data.details && (

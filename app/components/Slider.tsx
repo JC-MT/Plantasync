@@ -2,7 +2,7 @@ export function Slider({ title, children }: React.PropsWithChildren<{ title: str
   return (
     <>
       <h3 className="font-semibold text-primary m-0">{title}</h3>
-      <div className="flex gap-4 overflow-x-scroll w-full snap-always snap-x scrollbar-hide scroll-smooth pr-5">
+      <div className="flex gap-4 overflow-x-scroll w-full snap-always snap-x scrollbar-hide scroll-smooth pr-4">
         {children}
       </div>
     </>
