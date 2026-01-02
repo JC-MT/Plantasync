@@ -9,6 +9,11 @@ export interface Plant {
   last_water: Date;
   last_rotated: Date;
   last_skipped: Date;
+  health: string;
+  climate: string;
+  last_fertilized: Date;
+  custom_schedule: number;
+  image: string;
 }
 
 export interface LoaderData {
