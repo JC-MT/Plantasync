@@ -5,7 +5,6 @@
 
 :root {
   --navbar-height: 3.5rem;
-  --main-height: calc(100vh - var(--navbar-height));
   --radius: 0.625rem;
   --background: oklch(1 0 0);
   --foreground: oklch(0.147 0.004 49.25);
@@ -21,7 +20,7 @@
   --muted-foreground: oklch(0.553 0.013 58.071);
   --accent: var(--color-light-green);
   --accent-foreground: var(--color-primary);
-  --destructive: oklch(0.577 0.245 27.325);
+  --destructive: #aa3f0a;
   --border: oklch(0.923 0.003 48.717);
   --input: oklch(0.923 0.003 48.717);
   --ring: var(--color-forrest-green);
