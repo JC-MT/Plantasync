@@ -1,11 +1,16 @@
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL as string;
+const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY as string;
 import type { Plant, Action } from "~/components/types/SharedTypes.js";
 
-const defaultHeaders = {
+const defaultHeaders: {
+  apikey: string;
+  Authorization: string;
+  "Content-Type": string;
+  Prefer?: string;
+} = {
   apikey: supabaseKey,
   Authorization: `Bearer ${supabaseKey}`,
-  "Content-Type": "application/json"
+  "Content-Type": "application/json",
 };
 
 /**
@@ -19,14 +24,14 @@ export const getData = async (
   query: string,
   options: { estimatedCount?: boolean } = {}
 ): Promise<any> => {
-  const headers: Record<string, string> = { ...defaultHeaders };
+  const headers = { ...defaultHeaders };
 
   if (options.estimatedCount) {
     headers["Prefer"] = "count=estimated";
   }
 
   return fetch(`${supabaseUrl}/rest/v1/${query}`, {
-    headers
+    headers,
   })
     .then((res) => {
       if (res.ok) {
@@ -42,12 +47,12 @@ export const getData = async (
         return res.json();
       }
       throw new Response("Failed to get data:", {
-        status: res.status
+        status: res.status,
       });
     })
     .catch((error) => {
       throw new Response("Failed to get data:", {
-        status: error.status || 500
+        status: error.status || 500,
       });
     });
 };
@@ -67,9 +72,9 @@ export const postData = async (
     method: "POST",
     headers: {
       ...defaultHeaders,
-      Prefer: "return=representation"
+      Prefer: "return=representation",
     },
-    body: JSON.stringify(body)
+    body: JSON.stringify(body),
   });
 
   if (!res.ok) {
@@ -94,9 +99,9 @@ export const updateData = async (
     method: "PATCH",
     headers: {
       ...defaultHeaders,
-      Prefer: "return=representation"
+      Prefer: "return=representation",
     },
-    body: JSON.stringify(updates)
+    body: JSON.stringify(updates),
   });
 
   if (!res.ok) {
@@ -117,8 +122,8 @@ export const deleteData = async (query: string): Promise<boolean> => {
     method: "DELETE",
     headers: {
       ...defaultHeaders,
-      Prefer: "return=minimal"
-    }
+      Prefer: "return=minimal",
+    },
   });
 
   if (!res.ok) {
