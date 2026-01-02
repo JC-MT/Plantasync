@@ -1,65 +1,78 @@
-import { useEffect } from "react";
-import { useLocation } from "react-router";
+import { Cog } from "lucide-react";
+import { useLocation, redirect } from "react-router";
+import { useEffect, useState } from "react";
 import { Image } from "~/components/Image.js";
+import { Toggle } from "~/components/ui/toggle";
+import { EditForm } from "../../components/Forms";
 import { InfoCard } from "~/components/InfoCard.js";
 import { PlantTasks } from "~/components/PlantTasks";
 import PageContainer from "~/layout/PageContainer.js";
 import { useGardenData } from "~/hooks/useGardenData.js";
 import { PlantDetails } from "~/components/PlantDetails.js";
 import { PlantHistory } from "~/components/PlantHistory.js";
-import { getData, postData, updateData } from "~/db/query.js";
+import { getData, postData, updateData, deleteData } from "~/db/query.js";
 import type { Action, Plant } from "~/components/types/SharedTypes.js";
+import type { Route } from "./+types/plant";
+import { cleanFormData } from "~/utils";
 
 export function meta({
-  data
+  data,
 }: {
   data: { plant: Plant; actions: { actions: Action[]; count: number } };
 }) {
   return [
     { title: `Plantasync — ${data?.plant?.name || "Plant"} details` },
-    { name: "description", content: "This is the Detail page" }
+    { name: "description", content: "This is the Detail page" },
   ];
 }
 
-export async function action({ request }: { request: Request }) {
+export async function action({ request, params }: Route.ActionArgs) {
   const formData = await request.formData();
-  const actionType = formData.get("type") as string;
-  const plantId = formData.get("plant_id") as string;
-  const actionKey = formData.get("key") as string;
 
   try {
-    const action = await postData("actions", {
-      plant_id: plantId,
-      type: actionType
-    });
-
-    if (action[0]) {
-      try {
-        const plant = await updateData(`garden?id=eq.${plantId}`, {
-          [actionKey]: new Date().toISOString()
-        });
-
-        return plant[0];
-      } catch (error) {
-        throw new Response("Failed to update plant:", {
-          status: 500,
-          statusText: String(error)
-        });
-      }
+    if (request.method === "DELETE" && params?.id) {
+      await deleteData(`garden?id=eq.${params.id}`);
+      return redirect("/plants");
     }
 
-    throw new Response("Action creation failed", { status: 500 });
+    if (formData.get("is_action") && params?.id) {
+      const actionType = formData.get("type") as string;
+      const action = await postData("actions", {
+        plant_id: params.id,
+        type: actionType,
+      });
+      if (!action.length) {
+        throw new Response("Action creation failed", { status: 500 });
+      }
+      formData.delete("type");
+      formData.delete("is_action");
+    }
+
+    try {
+      if (params?.id) {
+        const body = cleanFormData(formData);
+        const plant = await updateData(`garden?id=eq.${params.id}`, body);
+        return plant;
+      }
+
+      throw Error("Missing plant id");
+    } catch (error) {
+      throw new Response("Failed to update plant:", {
+        status: 500,
+        statusText: String(error),
+      });
+    }
   } catch (error) {
-    throw new Response("Failed to add action:", {
+    throw new Response("Failed to add action or update plant:", {
       status: 500,
-      statusText: String(error)
+      statusText: String(error),
     });
   }
 }
 
 export async function loader({
   params,
-  request
+  request,
 }: {
   params: { id: number };
   request: Request;
@@ -87,7 +100,7 @@ export async function loader({
 }
 
 export default function Detail({
-  loaderData
+  loaderData,
 }: {
   loaderData: {
     plant: Plant;
@@ -97,6 +110,7 @@ export default function Detail({
   const { plant, actions } = loaderData;
   const location = useLocation();
   const { fetchGardenData } = useGardenData();
+  const [editingActive, setEditingActive] = useState(false);
 
   useEffect(() => {
     if (location.state?._isRedirect) {
@@ -118,27 +132,44 @@ export default function Detail({
           height={1000}
           viewTransition={plant.id}
         />
-        <div className="grid gap-4">
-          <div className="tracking-tight text-balance">
-            <h1
-              className="text-3xl/none md:text-5xl font-bold"
-              style={{
-                viewTransitionName: `plant-title-${plant.id}`
-              }}
-            >
-              {plant.name}
-            </h1>
+        <div className="grid gap-4 h-fit">
+          <div className="tracking-tight text-balance grid gap-1">
+            <div className="flex justify-between items-center">
+              <h1
+                className="text-3xl/none md:text-5xl font-bold"
+                style={{
+                  viewTransitionName: `plant-title-${plant.id}`,
+                }}
+              >
+                {plant.name}
+              </h1>
+              <Toggle
+                variant="outline"
+                size="sm"
+                pressed={editingActive}
+                onPressedChange={setEditingActive}
+              >
+                <Cog />
+                <span className="sr-only">Edit your plant</span>
+              </Toggle>
+            </div>
             <p className="text-base font-medium">{plant.category}</p>
           </div>
-          <InfoCard>
-            <PlantTasks plant={plant} />
-          </InfoCard>
-          <InfoCard>
-            <PlantDetails plant={plant} />
-          </InfoCard>
-          <InfoCard>
-            <PlantHistory actions={actions} />
-          </InfoCard>
+          {!editingActive ? (
+            <>
+              <InfoCard>
+                <PlantTasks plant={plant} />
+              </InfoCard>
+              <InfoCard>
+                <PlantDetails plant={plant} />
+              </InfoCard>
+              <InfoCard>
+                <PlantHistory actions={actions} />
+              </InfoCard>
+            </>
+          ) : (
+            <EditForm plant={plant} />
+          )}
         </div>
       </div>
     </PageContainer>

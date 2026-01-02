@@ -9,7 +9,12 @@ export function capitalizeFirstLetters(words: string) {
     .join(" ");
 }
 
-export function getGeneralWateringInterval(plantType: string) {
+export function getGeneralWateringInterval(
+  plantType: string,
+  customSchedule: number
+) {
+  if (customSchedule) return customSchedule;
+
   const formattedType = plantType?.toLowerCase();
   if (!formattedType) return 8;
 
@@ -27,19 +32,22 @@ export function getDaysSinceLastAction(lastActionDate: Date) {
   );
 }
 
-export function isReadyForWatering(plantType: string, lastWateredDate: Date) {
+export function isReadyForWatering(
+  plantType: string,
+  lastWateredDate: Date,
+  customSchedule: number
+) {
   const daysSinceLastWatered = getDaysSinceLastAction(lastWateredDate);
   const plantNeedsWatering =
-    daysSinceLastWatered >= getGeneralWateringInterval(plantType);
+    daysSinceLastWatered >=
+    getGeneralWateringInterval(plantType, customSchedule);
 
   return {
     plantNeedsWatering,
     nextWateringInDays: plantNeedsWatering
       ? 0
-      : getGeneralWateringInterval(plantType) - daysSinceLastWatered,
-    pastDue: plantNeedsWatering
-      ? daysSinceLastWatered - getGeneralWateringInterval(plantType)
-      : 0
+      : getGeneralWateringInterval(plantType, customSchedule) -
+        daysSinceLastWatered,
   };
 }
 
@@ -56,9 +64,19 @@ export function formatDateToInputValue(date: Date) {
     "September",
     "October",
     "November",
-    "December"
+    "December",
   ];
   const year = date.getFullYear();
   const day = String(date.getDate()).padStart(2, "0");
   return `${months[date.getMonth()]} ${day}, ${year}`;
+}
+
+export function cleanFormData(formData: FormData) {
+  const cleanedData: Record<string, FormDataEntryValue | number | null> = {};
+
+  for (const [key, value] of formData.entries()) {
+    value === "" ? cleanedData[key] = null : cleanedData[key] = value;
+  }
+
+  return cleanedData;
 }

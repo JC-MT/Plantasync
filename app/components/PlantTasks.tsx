@@ -2,101 +2,118 @@ import { Button } from "./ui/button";
 import { useFetcher } from "react-router";
 import { actionButtons } from "~/constants";
 import type { Plant } from "~/components/types/SharedTypes.js";
-import { isReadyForWatering, getDaysSinceLastAction } from "~/utils";
+import {
+  isReadyForWatering,
+  getDaysSinceLastAction,
+  getGeneralWateringInterval,
+} from "~/utils";
+import { BadgeCheck, BadgeAlert, BadgeX } from "lucide-react";
 
 export function PlantTasks({ plant }: { plant: Plant }) {
   const fetcher = useFetcher();
-  const { plantNeedsWatering, nextWateringInDays, pastDue } =
-    isReadyForWatering(plant.category, plant.last_water);
-
-  let taskStatus = {
-    wateredToday: getDaysSinceLastAction(plant.last_water) === 0,
-    rotatedToday: getDaysSinceLastAction(plant.last_rotated) === 0,
-    skippedToday: getDaysSinceLastAction(plant.last_skipped) === 0
-  };
+  const { plantNeedsWatering, nextWateringInDays } = isReadyForWatering(
+    plant.category,
+    plant.last_water,
+    plant.custom_schedule
+  );
+  const daysUntilNextRotation =
+    getGeneralWateringInterval(plant.category, plant.custom_schedule) -
+    getDaysSinceLastAction(plant.last_rotated);
+  let wateredToday = getDaysSinceLastAction(plant.last_water) === 0;
+  let rotatedToday = getDaysSinceLastAction(plant.last_rotated) === 0;
+  let skippedToday = getDaysSinceLastAction(plant.last_skipped) === 0;
+  let fertilizedToday = getDaysSinceLastAction(plant.last_fertilized) === 0;
 
   if (fetcher.formData) {
     const formType = fetcher.formData.get("type");
 
-    if (formType === "watered") taskStatus.wateredToday = true;
-    if (formType === "rotated") taskStatus.rotatedToday = true;
-    if (formType === "skipped") taskStatus.skippedToday = true;
+    if (formType === "watered") wateredToday = true;
+    if (formType === "rotated") rotatedToday = true;
+    if (formType === "skipped") skippedToday = true;
+    if (formType === "fertilized") fertilizedToday = true;
   }
 
   return (
-    <div className="grid gap-4">
+    <div className="grid gap-3">
       <div className="flex items-center gap-2 justify-between">
         <h2 className="font-bold text-2xl/none md:text-3xl/none">Tasks</h2>
-        <span
-          className={`text-sm/none place-self-start text-left font-medium ${plantNeedsWatering ? "text-red-600" : "text-green-600"}`}
-        >
-          {plantNeedsWatering ? "Needs attention!" : "Hydrated"}
+        <span className="text-sm/none place-self-start text-left font-medium">
+          {!plantNeedsWatering || wateredToday || rotatedToday ? (
+            <>
+              {(daysUntilNextRotation >= 0 && !plantNeedsWatering) ||
+              (wateredToday && rotatedToday) ? (
+                <span className="text-green-600 flex items-center gap-1">
+                  <BadgeCheck className="inline size-4" />
+                  All caught up
+                </span>
+              ) : (
+                <span className="text-yellow-600 flex items-center gap-1">
+                  <BadgeAlert className="inline size-4" />
+                  Needs {plantNeedsWatering ? "watering" : "rotating"}
+                </span>
+              )}
+            </>
+          ) : (
+            <span className="text-red-600 flex items-center gap-1">
+              <BadgeX className="inline size-4" />
+              Needs attention
+            </span>
+          )}
         </span>
       </div>
-      <div className="grid gap-2">
-        <h3 className="font-bold text-base/none md:text-xl/none">Current</h3>
-        {plantNeedsWatering ? (
-          <div className="flex flex-col gap-1">
-            <p className="text-left text-sm/none md:text-base/none font-medium text-dark-green">
-              {pastDue} days past due for watering
-            </p>
-            <p className="text-left text-sm/none md:text-base/none font-medium text-dark-green">
-              {Math.floor(pastDue / 2)} days past due for rotation
-            </p>
-          </div>
-        ) : (
-          <p className="text-left text-sm/none md:text-base/none font-medium text-dark-green">
-            No current tasks.
-          </p>
-        )}
+
+      <div className="flex flex-col gap-1">
+        <p className="text-left text-sm/none md:text-base/none font-medium text-dark-green">
+          {wateredToday || !plantNeedsWatering
+            ? `Next water ${nextWateringInDays === 0 ? "today" : `in ${nextWateringInDays} days`}`
+            : "Plant needs watering"}
+        </p>
+        <p className="text-left text-sm/none md:text-base/none font-medium text-dark-green">
+          {rotatedToday ||
+          getGeneralWateringInterval(plant.category, plant.custom_schedule) >=
+            getDaysSinceLastAction(plant.last_rotated)
+            ? `Next rotation ${daysUntilNextRotation === 0 ? "today" : `in ${daysUntilNextRotation} days`}`
+            : "Plant needs rotating"}
+        </p>
       </div>
-      <div className="grid gap-1 md:gap-2 grid-cols-2 md:grid-cols-3">
+      <div className="grid gap-1 md:gap-2 grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
         {actionButtons.map((button) => {
-          const wasActionDoneToday = taskStatus[button.taskKey];
+          let actionDoneToday = false;
+          switch (button.value) {
+            case "watered":
+              actionDoneToday = wateredToday;
+              break;
+            case "rotated":
+              actionDoneToday = rotatedToday;
+              break;
+            case "skipped":
+              actionDoneToday = skippedToday;
+              break;
+            case "fertilized":
+              actionDoneToday = fertilizedToday;
+              break;
+          }
           return (
             <fetcher.Form method="post" key={button.key}>
-              <input type="hidden" name="plant_id" value={plant.id} />
+              <input type="hidden" name="is_action" value="true" />
               <input type="hidden" name="type" value={button.value} />
-              <input type="hidden" name="key" value={button.key} />
+              <input type="hidden" name={button.key} value={new Date().toISOString()} />
               <Button
                 type="submit"
-                variant={wasActionDoneToday ? "default" : "outline"}
+                variant={actionDoneToday ? "default" : "outline"}
                 className="font-semibold w-full"
-                disabled={wasActionDoneToday}
+                disabled={actionDoneToday}
               >
-                {wasActionDoneToday ? button.text.complete : button.text.idle}
+                {actionDoneToday ? button.text.complete : button.text.idle}
                 <img
                   alt={`${button.value} icon`}
                   className="object-cover size-5"
-                  src={
-                    button.value === "watered"
-                      ? "https://cdn-icons-png.flaticon.com/512/2514/2514435.png"
-                      : button.value === "rotated"
-                        ? "https://cdn-icons-png.flaticon.com/512/545/545682.png"
-                        : "https://cdn-icons-png.flaticon.com/512/2961/2961937.png"
-                  }
+                  src={button.img}
                 ></img>
               </Button>
             </fetcher.Form>
           );
         })}
-      </div>
-      <div className="grid gap-2">
-        <h3 className="font-bold text-base/none md:text-xl/none">Upcoming</h3>
-        {nextWateringInDays ? (
-          <div className="flex flex-col gap-1">
-            <p className="text-left text-sm/none md:text-base/none font-medium text-dark-green">
-              Next watering is in {nextWateringInDays} days.
-            </p>
-            <p className="text-left text-sm/none md:text-base/none font-medium text-dark-green">
-              Next rotation is in {Math.floor(nextWateringInDays / 2)} days.
-            </p>
-          </div>
-        ) : (
-          <p className="text-left text-sm/none md:text-base/none font-medium text-dark-green">
-            No upcoming tasks.
-          </p>
-        )}
       </div>
     </div>
   );
