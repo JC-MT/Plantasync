@@ -1,9 +1,10 @@
 "use client";
 import type { Plant } from "./types/SharedTypes";
+const { VITE_IMAGE_CDN_URL } = import.meta.env;
 
 import * as z from "zod";
 import { format } from "date-fns";
-import { cn } from "../lib/utils";
+import { cn } from "../utils/shadcn";
 import { Input } from "./ui/input";
 import { Modal } from "./ui/dialog";
 import { Button } from "./ui/button";
@@ -12,6 +13,7 @@ import { Calendar } from "./ui/calendar";
 import { useFetcher } from "react-router";
 import { useForm } from "react-hook-form";
 import { FileInput } from "./ui/file-input";
+import { cleanFormData } from "~/utils/helpers";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Calendar as CalendarIcon } from "lucide-react";
 import { RadioGroup, RadioGroupItem } from "./ui/radio-group";
@@ -44,15 +46,100 @@ const formSchema = z.object({
   ideal_light: z.string().optional(),
 });
 
-const fetcherCallback = (
-  data: z.infer<typeof formSchema>,
-  fetcher: any,
-  event?: React.BaseSyntheticEvent
-) => {
-  if (event?.target) {
-    fetcher.submit(new FormData(event.target), { method: "POST" });
-  }
-};
+const signUpFormSchema = z.object({
+  name: z.string().min(1, "Required: Please provide a name for your account."),
+  password: z.string().min(1, "Required: Please provide a password."),
+});
+
+export function SignUpForm() {
+  const fetcher = useFetcher();
+  const form = useForm<z.infer<typeof signUpFormSchema>>({
+    resolver: zodResolver(signUpFormSchema),
+    defaultValues: {
+      name: "",
+      password: "",
+    },
+  });
+
+  return (
+    <Form {...form}>
+      <form
+        onSubmit={form.handleSubmit((data) => {
+          fetcher.submit(data, {
+            method: "POST",
+            action: "/api/register",
+          });
+        })}
+        className="grid space-y-4 max-w-lg mx-auto p-4 bg-white rounded-lg shadow-md md:my-14"
+      >
+        <div className="text-center">
+          <img
+            alt="logo"
+            className="object-cover size-10 md:size-12 place-self-center"
+            loading="lazy"
+            src={`${VITE_IMAGE_CDN_URL}plantasynclogo.png?v=1746559703&width=160`}
+          />
+          <h1 className="font-bold text-2xl md:text-4xl">Get started</h1>
+          <p className="text-base/none">Create a new account today.</p>
+        </div>
+
+        <FormField
+          name="name"
+          control={form.control}
+          render={({ field, fieldState }) => (
+            <FormItem data-invalid={fieldState.invalid}>
+              <FormLabel>Name</FormLabel>
+              <FormControl>
+                <Input
+                  placeholder="Golden Pothos, Spider Plant, etc."
+                  type="text"
+                  autoComplete="on"
+                  {...field}
+                />
+              </FormControl>
+              {fieldState.invalid && <FormMessage />}
+            </FormItem>
+          )}
+        />
+        <FormField
+          name="password"
+          control={form.control}
+          render={({ field, fieldState }) => (
+            <FormItem data-invalid={fieldState.invalid}>
+              <FormLabel>Password</FormLabel>
+              <FormControl>
+                <Input placeholder="Password" type="password" {...field} />
+              </FormControl>
+              {fieldState.invalid && <FormMessage />}
+            </FormItem>
+          )}
+        />
+        <div className="grid gap-2">
+          <Button
+            className="min-w-32 w-full font-semibold"
+            type="submit"
+            disabled={fetcher.state === "submitting"}
+          >
+            {fetcher.state === "submitting" ? (
+              <>
+                <Spinner />
+                Signing up...
+              </>
+            ) : (
+              "Sign Up"
+            )}
+          </Button>
+          <div className="flex gap-1 text-sm font-medium">
+            Already have an account?
+            <a href="#" className="underline">
+              Log in
+            </a>
+          </div>
+        </div>
+      </form>
+    </Form>
+  );
+}
 
 export function AddForm() {
   const fetcher = useFetcher();
@@ -72,9 +159,13 @@ export function AddForm() {
   return (
     <Form {...form}>
       <form
-        onSubmit={form.handleSubmit((data, event) =>
-          fetcherCallback(data, fetcher, event)
-        )}
+        onSubmit={form.handleSubmit((data) => {
+          const cleanedData = cleanFormData(data);
+          fetcher.submit(cleanedData, {
+            method: "POST",
+            action: "/add",
+          });
+        })}
         className="space-y-7 max-w-3xl mx-auto p-4 bg-white rounded-lg shadow-md"
       >
         <FormField
@@ -294,9 +385,13 @@ export function EditForm({ plant }: { plant: Plant }) {
   return (
     <Form {...form}>
       <form
-        onSubmit={form.handleSubmit((data, event) =>
-          fetcherCallback(data, fetcher, event)
-        )}
+        onSubmit={form.handleSubmit((data) => {
+          const cleanedData = cleanFormData(data);
+          fetcher.submit(cleanedData, {
+            method: "PUT",
+            action: `/plants/${plant.id}`,
+          });
+        })}
         className="w-full space-y-4 max-w-3xl mx-auto p-4 bg-white rounded-lg shadow-md"
       >
         <FormField
@@ -539,7 +634,12 @@ export function EditForm({ plant }: { plant: Plant }) {
                 type="submit"
                 variant="destructive"
                 className="min-w-20 font-semibold"
-                onClick={() => fetcher.submit(new FormData(), { method: "DELETE" })}
+                onClick={(e) =>
+                  fetcher.submit(e.currentTarget.form, {
+                    method: "DELETE",
+                    action: `/plants/${plant.id}`,
+                  })
+                }
               >
                 Delete
               </Button>

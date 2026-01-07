@@ -72,13 +72,22 @@ export function formatDateToInputValue(date: Date) {
 }
 
 export function cleanFormData(rawData: FormData | Record<string, any>) {
-  const cleanedData: Record<string, FormDataEntryValue | number | null> = {};
+  const cleanedData: Record<string, string | number | null> = {};
 
   const rawDataIterator =
     rawData instanceof FormData ? rawData.entries() : Object.entries(rawData);
 
   for (const [key, value] of rawDataIterator) {
-    value === "" ? (cleanedData[key] = null) : (cleanedData[key] = value);
+    if (!value) {
+      cleanedData[key] = null;
+      continue;
+    }
+
+    if (value instanceof Date) {
+      cleanedData[key] = value.toISOString().slice(0, 10);
+    } else {
+      cleanedData[key] = String(value);
+    }
   }
 
   return cleanedData;
