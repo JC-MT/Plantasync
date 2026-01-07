@@ -1,13 +1,13 @@
+import type { Plant } from "~/components/types/SharedTypes.js";
 import { Button } from "./ui/button";
 import { useFetcher } from "react-router";
 import { actionButtons } from "~/constants";
-import type { Plant } from "~/components/types/SharedTypes.js";
+import { BadgeCheck, BadgeAlert, BadgeX } from "lucide-react";
 import {
   isReadyForWatering,
   getDaysSinceLastAction,
   getGeneralWateringInterval,
 } from "~/utils";
-import { BadgeCheck, BadgeAlert, BadgeX } from "lucide-react";
 
 export function PlantTasks({ plant }: { plant: Plant }) {
   const fetcher = useFetcher();

@@ -7,11 +7,9 @@ import { MinusIcon, PlusIcon, SquarePen } from "lucide-react";
 
 export const CustomSchedule = ({
   defaultValue,
-  id,
   customSchedule,
 }: {
   defaultValue: number;
-  id: number;
   customSchedule: number;
 }) => {
   const fetcher = useFetcher();

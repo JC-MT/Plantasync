@@ -143,8 +143,8 @@ export const navLinks: {
     to: "/explore",
   },
   {
-    name: "Sign up",
-    to: "/register",
+    name: "Account",
+    to: "/account",
     attributes: {
       end: "",
     },
