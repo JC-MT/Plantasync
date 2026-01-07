@@ -1,5 +1,5 @@
 import type { Plant } from "~/components/types/SharedTypes.js";
-import { formatDateToInputValue } from "~/utils";
+import { formatDateToInputValue } from "~/utils/helpers";
 import { CustomSchedule } from "./CustomSchedule";
 
 export function PlantDetails({ plant }: { plant: Plant }) {

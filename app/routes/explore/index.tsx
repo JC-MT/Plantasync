@@ -1,7 +1,7 @@
 import { getData } from "~/db/query.js";
 import { useEffect, useState } from "react";
 import { Image } from "~/components/Image.js";
-import { includesTerm } from "~/utils";
+import { includesTerm } from "~/utils/helpers";
 import { Filter } from "../../components/Filter";
 import { useGardenData } from "~/hooks/useGardenData";
 import PageContainer from "~/layout/PageContainer.js";

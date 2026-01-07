@@ -7,7 +7,7 @@ import {
   isReadyForWatering,
   getDaysSinceLastAction,
   getGeneralWateringInterval,
-} from "~/utils";
+} from "~/utils/helpers";
 
 export function PlantTasks({ plant }: { plant: Plant }) {
   const fetcher = useFetcher();

@@ -7,7 +7,7 @@ import { Label } from "../components/ui/label";
 const { VITE_IMAGE_CDN_URL } = import.meta.env;
 import { Button } from "../components/ui/button";
 import { defaultSliderPlants } from "~/constants";
-import { capitalizeFirstLetters } from "~/utils";
+import { capitalizeFirstLetters } from "~/utils/helpers";
 
 interface Result {
   species: {
