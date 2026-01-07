@@ -1,4 +1,4 @@
-import { Cog } from "lucide-react";
+import { SquarePen } from "lucide-react";
 import { useLocation, redirect } from "react-router";
 import { useEffect, useState } from "react";
 import { Image } from "~/components/Image.js";
@@ -13,7 +13,6 @@ import { PlantHistory } from "~/components/PlantHistory.js";
 import { getData, postData, updateData, deleteData } from "~/db/query.js";
 import type { Action, Plant } from "~/components/types/SharedTypes.js";
 import type { Route } from "./+types/plant";
-import { cleanFormData } from "~/utils";
 
 export function meta({
   data,
@@ -49,13 +48,12 @@ export async function action({ request, params }: Route.ActionArgs) {
     }
 
     try {
-      if (params?.id) {
-        const body = cleanFormData(formData);
-        const plant = await updateData(`garden?id=eq.${params.id}`, body);
-        return plant;
+      if (!params?.id) {
+        throw Error("Failed to update plant: Missing plant ID");
       }
 
-      throw Error("Missing plant id");
+      const plant = await updateData(`garden?id=eq.${params.id}`, formData);
+      return plant;
     } catch (error) {
       throw new Response("Failed to update plant:", {
         status: 500,
@@ -149,7 +147,7 @@ export default function Detail({
                 pressed={editingActive}
                 onPressedChange={setEditingActive}
               >
-                <Cog />
+                <SquarePen />
                 <span className="sr-only">Edit your plant</span>
               </Toggle>
             </div>

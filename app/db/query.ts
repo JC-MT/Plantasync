@@ -1,6 +1,7 @@
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL as string;
 const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY as string;
-import type { Plant, Action } from "~/components/types/SharedTypes.js";
+import type { Plant, Action, User } from "~/components/types/SharedTypes.js";
+import { cleanFormData } from "~/utils/helpers";
 
 const defaultHeaders: {
   apikey: string;
@@ -61,20 +62,21 @@ export const getData = async (
  * Post data to Supabase
  * @param {string} query - The query string to post data
  * @param {Record<string, any>} body - The data to post
- * @returns {Promise<Plant[] | Action[]>} - The posted data
+ * @returns {Promise<Plant[] | Action[] | User[]>} - The posted data
  * @throws {Response} - Throws an error if the request fails
  */
 export const postData = async (
   query: string,
-  body: Record<string, any>
-): Promise<Plant[] | Action[]> => {
+  body: Record<string, any> | FormData
+): Promise<Plant[] | Action[] | User[]> => {
+  const bodyData = cleanFormData(body);
   const res = await fetch(`${supabaseUrl}/rest/v1/${query}`, {
     method: "POST",
     headers: {
       ...defaultHeaders,
       Prefer: "return=representation",
     },
-    body: JSON.stringify(body),
+    body: JSON.stringify(bodyData),
   });
 
   if (!res.ok) {
@@ -87,21 +89,22 @@ export const postData = async (
 /**
  * Update data in Supabase
  * @param {string} query - The query string to update data
- * @param {Record<string, any>} updates - The data to update
- * @returns {Promise<any>} - The updated data
+ * @param {Record<string, any> | FormData} updates - The data to update
+ * @returns {Promise<Plant[] | Action[] | User[]>} - The updated data
  * @throws {Response} - Throws an error if the request fails
  */
 export const updateData = async (
   query: string,
-  updates: Record<string, any>
-): Promise<any> => {
+  updates: Record<string, any> | FormData
+): Promise<Plant[] | Action[] | User[]> => {
+  const bodyData = cleanFormData(updates);
   const res = await fetch(`${supabaseUrl}/rest/v1/${query}`, {
     method: "PATCH",
     headers: {
       ...defaultHeaders,
       Prefer: "return=representation",
     },
-    body: JSON.stringify(updates),
+    body: JSON.stringify(bodyData),
   });
 
   if (!res.ok) {

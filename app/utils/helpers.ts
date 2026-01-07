@@ -71,11 +71,14 @@ export function formatDateToInputValue(date: Date) {
   return `${months[date.getMonth()]} ${day}, ${year}`;
 }
 
-export function cleanFormData(formData: FormData) {
+export function cleanFormData(rawData: FormData | Record<string, any>) {
   const cleanedData: Record<string, FormDataEntryValue | number | null> = {};
 
-  for (const [key, value] of formData.entries()) {
-    value === "" ? cleanedData[key] = null : cleanedData[key] = value;
+  const rawDataIterator =
+    rawData instanceof FormData ? rawData.entries() : Object.entries(rawData);
+
+  for (const [key, value] of rawDataIterator) {
+    value === "" ? (cleanedData[key] = null) : (cleanedData[key] = value);
   }
 
   return cleanedData;

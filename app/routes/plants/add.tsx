@@ -1,4 +1,3 @@
-import { cleanFormData } from "~/utils";
 import { redirect } from "react-router";
 import type { Route } from "./+types/add";
 import { postData } from "../../db/query";
@@ -23,8 +22,7 @@ export function meta() {
 export async function action({ request }: Route.ActionArgs) {
   try {
     const formData = await request.formData();
-    const body = cleanFormData(formData)
-    const plant = await postData("garden", body);
+    const plant = await postData("garden", formData);
     
     return redirect("/plants/" + plant[0].id);
   } catch (error) {
