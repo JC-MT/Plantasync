@@ -1,6 +1,6 @@
 "use client";
 
-import { cn } from "../lib/utils";
+import { cn } from "../utils/shadcn";
 import type { ChangeEvent } from "react";
 import { useState, useEffect } from "react";
 import { useSearchParams } from "react-router";
