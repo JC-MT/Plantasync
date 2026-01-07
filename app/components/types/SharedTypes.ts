@@ -33,3 +33,12 @@ export interface Action {
   id: number;
   created_at: Date;
 }
+
+export interface User {
+  name: string;
+  password_hash: string;
+  password_salt: string;
+  id: string;
+  created_at: Date;
+  email: string;
+}
