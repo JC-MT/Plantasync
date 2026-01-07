@@ -38,11 +38,7 @@ export function PlantDetails({ plant }: { plant: Plant }) {
           </p>
         )}
       </div>
-      <CustomSchedule
-        defaultValue={7}
-        id={plant.id}
-        customSchedule={plant.custom_schedule}
-      />
+      <CustomSchedule defaultValue={7} customSchedule={plant.custom_schedule} />
     </div>
   );
 }
