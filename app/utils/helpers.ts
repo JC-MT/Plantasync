@@ -92,3 +92,8 @@ export function cleanFormData(rawData: FormData | Record<string, any>) {
 
   return cleanedData;
 }
+
+export function toBase64Url(buffer: ArrayBuffer) {
+  const base64 = btoa(String.fromCharCode(...new Uint8Array(buffer)));
+  return base64.replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+}

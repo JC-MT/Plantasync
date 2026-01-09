@@ -48,16 +48,14 @@ export async function verifyAccessToken(token: string) {
   return payload;
 }
 
-export async function verifyRefreshToken(rawRefreshToken: string, id: string) {
+export async function verifyRefreshToken(rawRefreshToken: string) {
   const buffer = await crypto.subtle.digest(
     "SHA-256",
     new TextEncoder().encode(rawRefreshToken)
   );
   const hashedRefreshToken = toBase64Url(buffer);
 
-  return await getData(
-    `sessions?token_hash=eq.${hashedRefreshToken}&user_id=eq.${id}`
-  );
+  return await getData(`sessions?token_hash=eq.${hashedRefreshToken}`);
 }
 
 export const accessCookie = createCookie("access", {
