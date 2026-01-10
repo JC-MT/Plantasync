@@ -51,7 +51,105 @@ const signUpFormSchema = z.object({
   password: z.string().min(1, "Required: Please provide a password."),
 });
 
-export function SignUpForm() {
+export function SignInForm({
+  handleFormToggle,
+}: {
+  handleFormToggle: () => void;
+}) {
+  const fetcher = useFetcher();
+  const form = useForm<z.infer<typeof signUpFormSchema>>({
+    resolver: zodResolver(signUpFormSchema),
+    defaultValues: {
+      name: "",
+      password: "",
+    },
+  });
+
+  return (
+    <Form {...form}>
+      <form
+        onSubmit={form.handleSubmit((data) => {
+          fetcher.submit(data, {
+            method: "POST",
+            action: "/api/login",
+          });
+        })}
+        className="grid space-y-4 max-w-lg mx-auto p-4 bg-white rounded-lg shadow-md md:my-14"
+      >
+        <div className="text-center">
+          <img
+            alt="logo"
+            className="object-cover size-10 md:size-12 place-self-center"
+            loading="lazy"
+            src={`${VITE_IMAGE_CDN_URL}plantasynclogo.png?v=1746559703&width=160`}
+          />
+          <h1 className="font-bold text-2xl md:text-4xl">Welcome back</h1>
+          <p className="text-base/none">Sign in to your account</p>
+        </div>
+
+        <FormField
+          name="name"
+          control={form.control}
+          render={({ field, fieldState }) => (
+            <FormItem data-invalid={fieldState.invalid}>
+              <FormLabel>Name</FormLabel>
+              <FormControl>
+                <Input type="text" autoComplete="on" {...field} />
+              </FormControl>
+              {fieldState.invalid && <FormMessage />}
+            </FormItem>
+          )}
+        />
+        <FormField
+          name="password"
+          control={form.control}
+          render={({ field, fieldState }) => (
+            <FormItem data-invalid={fieldState.invalid}>
+              <FormLabel>Password</FormLabel>
+              <FormControl>
+                <Input type="password" {...field} />
+              </FormControl>
+              {fieldState.invalid && <FormMessage />}
+            </FormItem>
+          )}
+        />
+        <div className="grid gap-2">
+          <Button
+            className="min-w-32 w-full font-semibold"
+            type="submit"
+            disabled={fetcher.state === "submitting"}
+          >
+            {fetcher.state === "submitting" ? (
+              <>
+                <Spinner />
+                Signing in...
+              </>
+            ) : (
+              "Sign in"
+            )}
+          </Button>
+          <div className="flex gap-2 text-sm font-medium items-center">
+            Don’t have an account?
+            <Button
+              type="button"
+              variant="link"
+              size="link"
+              onClick={handleFormToggle}
+            >
+              Sign up
+            </Button>
+          </div>
+        </div>
+      </form>
+    </Form>
+  );
+}
+
+export function SignUpForm({
+  handleFormToggle,
+}: {
+  handleFormToggle: () => void;
+}) {
   const fetcher = useFetcher();
   const form = useForm<z.infer<typeof signUpFormSchema>>({
     resolver: zodResolver(signUpFormSchema),
@@ -80,7 +178,7 @@ export function SignUpForm() {
             src={`${VITE_IMAGE_CDN_URL}plantasynclogo.png?v=1746559703&width=160`}
           />
           <h1 className="font-bold text-2xl md:text-4xl">Get started</h1>
-          <p className="text-base/none">Create a new account today.</p>
+          <p className="text-base/none">Create a new account</p>
         </div>
 
         <FormField
@@ -90,12 +188,7 @@ export function SignUpForm() {
             <FormItem data-invalid={fieldState.invalid}>
               <FormLabel>Name</FormLabel>
               <FormControl>
-                <Input
-                  placeholder="Golden Pothos, Spider Plant, etc."
-                  type="text"
-                  autoComplete="on"
-                  {...field}
-                />
+                <Input type="text" autoComplete="on" {...field} />
               </FormControl>
               {fieldState.invalid && <FormMessage />}
             </FormItem>
@@ -108,7 +201,7 @@ export function SignUpForm() {
             <FormItem data-invalid={fieldState.invalid}>
               <FormLabel>Password</FormLabel>
               <FormControl>
-                <Input placeholder="Password" type="password" {...field} />
+                <Input type="password" {...field} />
               </FormControl>
               {fieldState.invalid && <FormMessage />}
             </FormItem>
@@ -126,14 +219,19 @@ export function SignUpForm() {
                 Signing up...
               </>
             ) : (
-              "Sign Up"
+              "Sign up"
             )}
           </Button>
-          <div className="flex gap-1 text-sm font-medium">
+          <div className="flex gap-2 text-sm font-medium items-center">
             Already have an account?
-            <a href="#" className="underline">
-              Log in
-            </a>
+            <Button
+              type="button"
+              variant="link"
+              size="link"
+              onClick={handleFormToggle}
+            >
+              Sign in
+            </Button>
           </div>
         </div>
       </form>
