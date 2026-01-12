@@ -24,7 +24,7 @@ export async function action({ request }: { request: Request }) {
 
     if (!session[0]) throw new Error("Unable to determine valid session.");
 
-    await deleteData(`sessions?id=eq.${session[0].id}`);
+    await deleteData(`sessions?token_hash=eq.${session[0].token_hash}`);
 
     const res = redirect("/account");
     res.headers.append(

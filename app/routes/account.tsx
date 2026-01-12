@@ -1,16 +1,15 @@
-const { VITE_JWT_SECRET } = import.meta.env;
+import { useFetcher } from "react-router";
+import { useEffect, useState } from "react";
 import type { Route } from "./+types/account";
-import type { User } from "~/components/types/SharedTypes";
-
-import { getData } from "~/db/query";
-import { jwtVerify } from "jose/jwt/verify";
-import { accessCookie } from "../utils/auth";
-import { SignUpForm } from "../components/Forms";
+import { Button } from "~/components/ui/button";
+import { authorizeRequest } from "~/server/auth";
 import PageContainer from "~/layout/PageContainer";
+import type { User } from "~/components/types/SharedTypes";
+import { SignUpForm, SignInForm } from "../components/Forms";
 
 export function meta() {
   return [
-    { title: "Plantasync — Register Page" },
+    { title: "Plantasync — Account page" },
     {
       name: "description",
       content: "Get started with Plantasync by creating your account.",
@@ -19,33 +18,43 @@ export function meta() {
 }
 
 export async function loader({ request }: Route.LoaderArgs) {
-  const cookieHeader = request.headers.get("Cookie");
-  const accessToken = await accessCookie.parse(cookieHeader);
-  if (!accessToken) return { user: null };
-
-  try {
-    const { payload } = await jwtVerify(
-      accessToken,
-      new TextEncoder().encode(VITE_JWT_SECRET)
-    );
-
-    if (!payload?.sub || !payload?.id) {
-      throw new Error("Invalid token payload.");
-    }
-
-    const user = (await getData(
-      `users?select=name,id,email&id=eq.${payload.id}`
-    )) as User[];
-    return { user: !user || user.length === 0 ? null : user[0] };
-  } catch (error) {
-    throw error;
-  }
+  const { user } = await authorizeRequest(request);
+  return user;
 }
 
 export default function Register({ loaderData }: { loaderData: User | null }) {
+  const fetcher = useFetcher();
+  const [showSignIn, setShowSignIn] = useState(false);
+  const [user, setUser] = useState<User | null>(loaderData);
+
+  useEffect(() => {
+    if (fetcher.data && fetcher.data.user) {
+      setUser(fetcher.data.user);
+    } else {
+      setUser(loaderData);
+    }
+  }, [fetcher.data, loaderData]);
+
+  const handleFormToggle = () => {
+    setShowSignIn(!showSignIn);
+  };
+
   return (
     <PageContainer>
-      <SignUpForm />
+      {user ? <h2>Welcome back, {user.name}!</h2> : null}
+      {user ? (
+        <p>You are already logged in.</p>
+      ) : showSignIn ? (
+        <SignInForm handleFormToggle={handleFormToggle} />
+      ) : (
+        <SignUpForm handleFormToggle={handleFormToggle} />
+      )}
+
+      {user ? (
+        <fetcher.Form method="post" action="/api/logout">
+          <Button type="submit">Log Out</Button>
+        </fetcher.Form>
+      ) : null}
     </PageContainer>
   );
 }

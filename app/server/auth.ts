@@ -1,9 +1,9 @@
 const { VITE_JWT_SECRET } = import.meta.env;
 import type { User } from "~/components/types/SharedTypes";
 import { jwtVerify, SignJWT } from "jose";
-import { postData, getData } from "~/db/query";
 import { createCookie } from "react-router";
 import { toBase64Url } from "../utils/helpers";
+import { postData, getData, deleteData } from "~/db/query";
 
 export async function createRefreshToken(userId: string) {
   const refreshToken = crypto.randomUUID() + crypto.randomUUID();
@@ -73,3 +73,42 @@ export const refreshCookie = createCookie("refresh", {
   path: "/",
   maxAge: 14 * 24 * 60 * 60,
 });
+
+export async function authorizeRequest(request: Request) {
+  const cookies = request.headers.get("Cookie");
+  const accessToken = await accessCookie.parse(cookies);
+  const refreshToken = await refreshCookie.parse(cookies);
+
+  if (accessToken) {
+    try {
+      const payload = await verifyAccessToken(accessToken);
+      if (payload?.id) {
+        const user: User[] = await getData(
+          `users?select=name,id,email&id=eq.${payload.id}`
+        );
+
+        return { user: user[0] ? user[0] : null, accessToken, refreshToken };
+      }
+    } catch {
+      // Ignore error and try to refresh the token
+    }
+  }
+
+  if (!refreshToken) return { user: null, accessToken, refreshToken };
+
+  const session = await verifyRefreshToken(refreshToken);
+  if (!session[0]) return { user: null, accessToken, refreshToken };
+
+  const user: User[] = await getData(
+    `users?select=name,id,email&id=eq.${session[0].user_id}`
+  );
+
+  if (!user[0]) return { user: null, accessToken, refreshToken };
+
+  await deleteData(`sessions?token_hash=eq.${session[0].token_hash}`);
+
+  const newAccess = await createAccessToken(user[0]);
+  const newRefresh = await createRefreshToken(user[0].id);
+
+  return { user: user[0], accessToken: newAccess, refreshToken: newRefresh };
+}
