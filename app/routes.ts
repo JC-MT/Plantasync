@@ -22,6 +22,5 @@ export default [
     route("/login", "routes/api/auth/login.ts"),
     route("/register", "routes/api/auth/register.ts"),
     route("/logout", "routes/api/auth/logout.ts"),
-    route("/refresh", "routes/api/auth/refresh.ts"),
   ]),
 ] satisfies RouteConfig;
