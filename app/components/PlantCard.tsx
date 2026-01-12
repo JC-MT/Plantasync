@@ -34,11 +34,11 @@ export function PlantCard({
               ? `plant-title-${plant.id}`
               : "none"
           }}
-          className="text-xl font-semibold truncate"
+          className="text-base/tight md:text-lg/tight font-semibold truncate"
         >
           {plant.name}
         </h3>
-        <p className="text-base/none">{plant.origin}</p>
+        <p className="text-xs/tight md:text-sm/tight">{plant.origin}</p>
       </div>
     </Link>
   );
