@@ -1,6 +1,7 @@
+import type { User } from "./types/SharedTypes";
 import { Button } from "./ui/button";
 import { Spinner } from "./ui/spinner";
-import { useFetcher } from "react-router";
+import { useFetcher, useRouteLoaderData } from "react-router";
 
 export function SliderCard({
   imageUrl,
@@ -12,6 +13,7 @@ export function SliderCard({
   description: string;
 }) {
   const fetcher = useFetcher();
+  const user: User | null | undefined = useRouteLoaderData("root");
   return (
     <div className="flex flex-col rounded-lg overflow-hidden border border-zinc-200 animate-slide-in-card delay-75 min-w-44 sm:min-w-56 snap-start">
       <img
@@ -36,6 +38,8 @@ export function SliderCard({
         >
           <input type="hidden" name="name" value={name} />
           <input type="hidden" name="image" value={imageUrl} />
+          <input type="hidden" name="user_id" value={user?.id || 0} />
+          <input type="hidden" name="demo_plant" value={user ? "false" : "true"} />
           <Button
             className="text-xs/none md:text-sm/none font-semibold px-3 py-1.5 md:px-4 md:py-2 h-8 md:h-9 min-w-12"
             type="submit"

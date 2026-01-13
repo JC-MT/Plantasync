@@ -1,5 +1,5 @@
 "use client";
-import type { Plant } from "./types/SharedTypes";
+import type { Plant, User } from "./types/SharedTypes";
 const { VITE_IMAGE_CDN_URL } = import.meta.env;
 
 import * as z from "zod";
@@ -10,12 +10,12 @@ import { Modal } from "./ui/dialog";
 import { Button } from "./ui/button";
 import { Spinner } from "./ui/spinner";
 import { Calendar } from "./ui/calendar";
-import { useFetcher } from "react-router";
 import { useForm } from "react-hook-form";
 import { FileInput } from "./ui/file-input";
 import { cleanFormData } from "~/utils/helpers";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Calendar as CalendarIcon } from "lucide-react";
+import { useFetcher, useRouteLoaderData } from "react-router";
 import { RadioGroup, RadioGroupItem } from "./ui/radio-group";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 import { categories, healthStatuses, climates, lights } from "../constants";
@@ -44,6 +44,8 @@ const formSchema = z.object({
   image: z.string().optional(),
   climate: z.string().optional(),
   ideal_light: z.string().optional(),
+  demo_plant: z.string().optional(),
+  user_id: z.string().optional(),
 });
 
 const signUpFormSchema = z.object({
@@ -94,7 +96,7 @@ export function SignInForm({
             <FormItem data-invalid={fieldState.invalid}>
               <FormLabel>Name</FormLabel>
               <FormControl>
-                <Input type="text" autoComplete="on" {...field} />
+                <Input type="text" autoComplete="name" {...field} />
               </FormControl>
               {fieldState.invalid && <FormMessage />}
             </FormItem>
@@ -107,7 +109,7 @@ export function SignInForm({
             <FormItem data-invalid={fieldState.invalid}>
               <FormLabel>Password</FormLabel>
               <FormControl>
-                <Input type="password" {...field} />
+                <Input type="password" autoComplete="current-password" {...field} />
               </FormControl>
               {fieldState.invalid && <FormMessage />}
             </FormItem>
@@ -188,7 +190,7 @@ export function SignUpForm({
             <FormItem data-invalid={fieldState.invalid}>
               <FormLabel>Name</FormLabel>
               <FormControl>
-                <Input type="text" autoComplete="on" {...field} />
+                <Input type="text" autoComplete="name" {...field} />
               </FormControl>
               {fieldState.invalid && <FormMessage />}
             </FormItem>
@@ -201,7 +203,7 @@ export function SignUpForm({
             <FormItem data-invalid={fieldState.invalid}>
               <FormLabel>Password</FormLabel>
               <FormControl>
-                <Input type="password" {...field} />
+                <Input type="password" autoComplete="new-password" {...field} />
               </FormControl>
               {fieldState.invalid && <FormMessage />}
             </FormItem>
@@ -241,16 +243,19 @@ export function SignUpForm({
 
 export function AddForm() {
   const fetcher = useFetcher();
+  const user: User | null | undefined = useRouteLoaderData("root");
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      name: "",
-      category: "",
+      name: undefined,
+      category: undefined,
       health: "healthy",
       last_water: undefined,
-      image: "",
-      climate: "",
-      ideal_light: "",
+      image: undefined,
+      climate: undefined,
+      ideal_light: undefined,
+      demo_plant: user ? "false" : "true",
+      user_id: user?.id ? String(user.id) : "0",
     },
   });
 
@@ -258,10 +263,22 @@ export function AddForm() {
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit((data) => {
-          const cleanedData = cleanFormData(data);
-          fetcher.submit(cleanedData, {
+          const payload = {
+            name: data.name,
+            category: data.category,
+            image: data.image ?? null,
+            health: data.health ?? null,
+            last_water: data.last_water ? data.last_water.toISOString() : null,
+            climate: data.climate ?? null,
+            ideal_light: data.ideal_light ?? null,
+            demo_plant: data.demo_plant === "true",
+            user_id: data.user_id ?? null,
+          };
+
+          fetcher.submit(payload, {
             method: "POST",
             action: "/add",
+            encType: "application/json",
           });
         })}
         className="space-y-7 max-w-3xl mx-auto p-4 bg-white rounded-lg shadow-md"
@@ -435,6 +452,16 @@ export function AddForm() {
               <FormMessage />
             </FormItem>
           )}
+        />
+        <FormField
+          name="user_id"
+          control={form.control}
+          render={({ field }) => <Input type="hidden" {...field} />}
+        />
+        <FormField
+          name="demo_plant"
+          control={form.control}
+          render={({ field }) => <Input type="hidden" {...field} />}
         />
         <div className="flex gap-2">
           <Button
