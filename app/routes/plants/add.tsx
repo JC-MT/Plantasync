@@ -21,9 +21,12 @@ export function meta() {
 
 export async function action({ request }: Route.ActionArgs) {
   try {
-    const formData = await request.formData();
+    const contentType = request.headers.get("content-type");
+    const formData = contentType?.includes("application/json")
+      ? await request.json()
+      : await request.formData();
     const plant = await postData("garden", formData);
-    
+
     return redirect("/plants/" + plant[0].id);
   } catch (error) {
     return new Response(`error: ${error || "Failed to add plant"}`, {
@@ -35,7 +38,7 @@ export async function action({ request }: Route.ActionArgs) {
 export default function Add() {
   return (
     <PageContainer>
-      <div className="grid gap-2 mb-4">
+      <div className="grid gap-1 mb-4">
         <h1 className="text-3xl/none md:text-5xl font-bold tracking-tight">
           Add a new plant
         </h1>

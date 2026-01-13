@@ -67,7 +67,7 @@ export const getData = async (
  */
 export const postData = async (
   query: string,
-  body: Record<string, any> | FormData
+  body: Record<string, any> | FormData | unknown
 ): Promise<Plant[] | Action[] | User[]> => {
   const bodyData = cleanFormData(body);
   const res = await fetch(`${supabaseUrl}/rest/v1/${query}`, {
