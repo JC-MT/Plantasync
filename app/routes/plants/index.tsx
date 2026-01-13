@@ -3,29 +3,36 @@ import { getData } from "~/db/query.js";
 import { PlantCard } from "~/components/PlantCard.js";
 import { Image } from "~/components/Image.js";
 import PageContainer from "~/layout/PageContainer.js";
-import type { Plant } from '~/components/types/SharedTypes.js';
+import type { Plant } from "~/components/types/SharedTypes.js";
+import { authorizeRequest } from "~/server/auth";
 
 export function meta() {
   return [
     { title: "Plantasync — Demo Garden" },
-    { name: "description", content: "This is the Index page" }
+    { name: "description", content: "This is the Index page" },
   ];
 }
 
-export async function loader() {
-  const plants = await getData(`garden?select=*`);
-  if (!plants) {
-    throw new Response("Failed to get plants:", { status: 500 });
+export async function loader({ request }: { request: Request }) {
+  const { user } = await authorizeRequest(request);
+
+  try {
+    const plants = await getData(
+      `garden?${user ? `user_id=eq.${user.id}` : ""}`
+    );
+
+    return { plants, user };
+  } catch (error) {
+    throw error;
   }
-  return plants;
 }
 
 export default function Index() {
-  const plants = useLoaderData();
+  const { plants, user } = useLoaderData();
   return (
     <PageContainer>
-      <h1 className="text-3xl/none md:text-5xl font-bold tracking-tight mb-2">
-        My Plants
+      <h1 className="text-3xl/none md:text-5xl font-bold tracking-tight mb-2 capitalize">
+        {user ? `${user.name}` : "Demo"} Plants
       </h1>
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 md:gap-4 lg:gap-6">
         {plants.map((plant: Plant, idx: number) => (
