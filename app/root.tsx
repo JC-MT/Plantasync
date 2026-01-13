@@ -1,33 +1,34 @@
+import "./app.css";
+const { VITE_IMAGE_CDN_URL } = import.meta.env;
+import type { Route } from "./+types/root";
+import { Navbar } from "./layout/Navbar";
+import { Footer } from "./layout/Footer";
+import { accessCookie, refreshCookie, authorizeRequest } from "./server/auth";
 import {
+  data,
   isRouteErrorResponse,
   Links,
   Meta,
   Outlet,
   Scripts,
-  ScrollRestoration
+  ScrollRestoration,
 } from "react-router";
-
-import type { Route } from "./+types/root";
-import { Footer } from "./layout/Footer";
-import { Navbar } from "./layout/Navbar";
-const { VITE_IMAGE_CDN_URL } = import.meta.env;
-import "./app.css";
 
 export const links: Route.LinksFunction = () => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
   {
     rel: "preconnect",
     href: "https://fonts.gstatic.com",
-    crossOrigin: "anonymous"
+    crossOrigin: "anonymous",
   },
   {
     rel: "stylesheet",
-    href: "https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+    href: "https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap",
   },
   {
     rel: "icon",
-    href: `${VITE_IMAGE_CDN_URL}plantasynclogo.png?v=1746559703&width=50`
-  }
+    href: `${VITE_IMAGE_CDN_URL}plantasynclogo.png?v=1746559703&width=50`,
+  },
 ];
 
 export function Layout({ children }: { children: React.ReactNode }) {
@@ -48,6 +49,21 @@ export function Layout({ children }: { children: React.ReactNode }) {
       </body>
     </html>
   );
+}
+
+export async function loader({ request }: Route.LoaderArgs) {
+  const { user, accessToken, refreshToken } = await authorizeRequest(request);
+  const headers = new Headers(request.headers);
+
+  if (accessToken)
+    headers.append("Set-Cookie", await accessCookie.serialize(accessToken));
+  if (refreshToken)
+    headers.append("Set-Cookie", await refreshCookie.serialize(refreshToken));
+
+  return data(user, {
+    headers: headers,
+    status: 200,
+  });
 }
 
 export default function App() {

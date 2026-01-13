@@ -5,8 +5,4 @@ export default {
   future: {
     unstable_viteEnvironmentApi: true,
   },
-  prerender: [
-    "/",
-    "/add"
-  ],
 } satisfies Config;
