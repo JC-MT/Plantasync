@@ -2,7 +2,7 @@ const { VITE_JWT_SECRET } = import.meta.env;
 import type { User } from "~/components/types/SharedTypes";
 import { jwtVerify, SignJWT } from "jose";
 import { createCookie } from "react-router";
-import { toBase64Url } from "../utils/helpers";
+import { toHex } from "../utils/helpers";
 import { postData, getData, deleteData } from "~/db/query";
 
 export async function createRefreshToken(userId: string) {
@@ -11,11 +11,12 @@ export async function createRefreshToken(userId: string) {
     "SHA-256",
     new TextEncoder().encode(refreshToken)
   );
-  const hashBase64 = toBase64Url(buffer);
+  const hashHex = toHex(buffer);
+
   try {
     await postData("sessions", {
       user_id: userId,
-      token_hash: hashBase64,
+      token_hash: hashHex,
       expires_at: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000),
     });
 
@@ -53,7 +54,7 @@ export async function verifyRefreshToken(rawRefreshToken: string) {
     "SHA-256",
     new TextEncoder().encode(rawRefreshToken)
   );
-  const hashedRefreshToken = toBase64Url(buffer);
+  const hashedRefreshToken = toHex(buffer);
 
   return await getData(`sessions?token_hash=eq.${hashedRefreshToken}`);
 }

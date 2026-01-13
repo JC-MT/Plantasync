@@ -71,15 +71,15 @@ export function formatDateToInputValue(date: Date) {
   return `${months[date.getMonth()]} ${day}, ${year}`;
 }
 
-export function cleanFormData(rawData: FormData | Record<string, any>) {
-  const cleanedData: Record<string, string | number | null> = {};
+export function cleanFormData(rawData: FormData | Record<string, any> | unknown) {
+  const cleanedData: Record<string, string | number | null | boolean> = {};
 
   const rawDataIterator =
-    rawData instanceof FormData ? rawData.entries() : Object.entries(rawData);
+    rawData instanceof FormData ? rawData.entries() : Object.entries(rawData || {});
 
-  for (const [key, value] of rawDataIterator) {
+  for (const [key, value] of rawDataIterator) {;
     if (!value) {
-      cleanedData[key] = null;
+      cleanedData[key] = typeof value === "boolean" ? value : null;
       continue;
     }
 
@@ -93,7 +93,9 @@ export function cleanFormData(rawData: FormData | Record<string, any>) {
   return cleanedData;
 }
 
-export function toBase64Url(buffer: ArrayBuffer) {
-  const base64 = btoa(String.fromCharCode(...new Uint8Array(buffer)));
-  return base64.replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+export function toHex(buffer: ArrayBuffer) {
+  return [...new Uint8Array(buffer)]
+    .map(b => b.toString(16).padStart(2, "0"))
+    .join("");
 }
+
