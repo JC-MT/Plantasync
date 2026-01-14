@@ -1,3 +1,11 @@
+import { scrypt } from "../../node_modules/@noble/hashes/scrypt";
+import {
+  randomBytes,
+  bytesToHex,
+  hexToBytes,
+  utf8ToBytes,
+} from "../../node_modules/@noble/hashes/utils";
+
 export function includesTerm(word: string, searchTerm: string) {
   return word.toLowerCase().includes(searchTerm.toLowerCase());
 }
@@ -57,9 +65,48 @@ export function convertFormData(rawData: FormData | unknown) {
     : rawData;
 }
 
-export function toHex(buffer: ArrayBuffer) {
-  return [...new Uint8Array(buffer)]
-    .map(b => b.toString(16).padStart(2, "0"))
-    .join("");
+export function hashPassword(password: string) {
+  if (!password) {
+    throw new Error("Cannot create credentials.");
+  }
+
+  const salt = randomBytes(16);
+  const hash = scryptPassword(password, salt);
+
+  return {
+    salt: bytesToHex(salt),
+    hash: bytesToHex(hash),
+  };
 }
 
+export function verifyPassword(
+  password: string,
+  storedHash: string,
+  storedSalt: string
+) {
+  if (!password || !storedHash || !storedSalt) {
+    throw new Error("Cannot confirm credentials.");
+  }
+
+  const salt = hexToBytes(storedSalt);
+  const expectedHash = hexToBytes(storedHash);
+
+  const hash = scryptPassword(password, salt);
+
+  if (hash.length !== expectedHash.length) return false;
+
+  return crypto.subtle.timingSafeEqual(hash, expectedHash);
+}
+
+function scryptPassword(password: string, salt: Uint8Array) {
+  const passwordToBytes = utf8ToBytes(password);
+
+  const hash = scrypt(passwordToBytes, salt, {
+    N: 2 ** 16,
+    r: 8,
+    p: 1,
+    dkLen: 32,
+  });
+
+  return hash;
+}

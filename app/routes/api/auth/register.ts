@@ -1,7 +1,7 @@
 import { redirect } from "react-router";
 import { postData } from "../../../db/query";
 import type { User } from "../../../components/types/SharedTypes";
-import { hashPassword } from "~/utils/auth";
+import { hashPassword } from "~/utils/helpers";
 import {
   createRefreshToken,
   createAccessToken,
