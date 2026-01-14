@@ -1,5 +1,5 @@
 import { redirect } from "react-router";
-import { verifyPassword } from "~/utils/auth";
+import { verifyPassword } from "~/utils/helpers"
 import { deleteData, getData } from "~/db/query";
 import type { User } from "~/components/types/SharedTypes";
 import {
