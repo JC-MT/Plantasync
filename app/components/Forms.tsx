@@ -3,16 +3,15 @@ import type { Plant, User } from "./types/SharedTypes";
 const { VITE_IMAGE_CDN_URL } = import.meta.env;
 
 import * as z from "zod";
-import { format } from "date-fns";
-import { cn } from "../utils/shadcn";
 import { Input } from "./ui/input";
 import { Modal } from "./ui/dialog";
+import { cn } from "../utils/shadcn";
 import { Button } from "./ui/button";
 import { Spinner } from "./ui/spinner";
+import { format, parse } from "date-fns";
 import { Calendar } from "./ui/calendar";
 import { useForm } from "react-hook-form";
 import { FileInput } from "./ui/file-input";
-import { cleanFormData } from "~/utils/helpers";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Calendar as CalendarIcon } from "lucide-react";
 import { useFetcher, useRouteLoaderData } from "react-router";
@@ -44,14 +43,22 @@ const formSchema = z.object({
   image: z.string().optional(),
   climate: z.string().optional(),
   ideal_light: z.string().optional(),
-  demo_plant: z.string().optional(),
+  demo_plant: z.boolean().optional(),
   user_id: z.string().optional(),
 });
 
 const signUpFormSchema = z.object({
-  name: z.string().min(1, "Required: Please provide a name for your account."),
-  password: z.string().min(1, "Required: Please provide a password."),
+  name: z.string().min(1, "Required: Please provide a name"),
+  email: z.string().email("Invalid email address").optional(),
+  password: z.string().min(1, "Required: Please provide a password"),
 });
+
+const convertToPayload = (data: z.infer<typeof formSchema>) => {
+  return {
+    ...data,
+    last_water: data.last_water ? data.last_water.toDateString() : null,
+  };
+};
 
 export function SignInForm({
   handleFormToggle,
@@ -63,6 +70,7 @@ export function SignInForm({
     resolver: zodResolver(signUpFormSchema),
     defaultValues: {
       name: "",
+      email: undefined,
       password: "",
     },
   });
@@ -103,13 +111,30 @@ export function SignInForm({
           )}
         />
         <FormField
+          name="email"
+          control={form.control}
+          render={({ field, fieldState }) => (
+            <FormItem data-invalid={fieldState.invalid}>
+              <FormLabel>Email (optional)</FormLabel>
+              <FormControl>
+                <Input type="text" autoComplete="on" {...field} />
+              </FormControl>
+              {fieldState.invalid && <FormMessage />}
+            </FormItem>
+          )}
+        />
+        <FormField
           name="password"
           control={form.control}
           render={({ field, fieldState }) => (
             <FormItem data-invalid={fieldState.invalid}>
               <FormLabel>Password</FormLabel>
               <FormControl>
-                <Input type="password" autoComplete="current-password" {...field} />
+                <Input
+                  type="password"
+                  autoComplete="current-password"
+                  {...field}
+                />
               </FormControl>
               {fieldState.invalid && <FormMessage />}
             </FormItem>
@@ -157,6 +182,7 @@ export function SignUpForm({
     resolver: zodResolver(signUpFormSchema),
     defaultValues: {
       name: "",
+      email: undefined,
       password: "",
     },
   });
@@ -191,6 +217,19 @@ export function SignUpForm({
               <FormLabel>Name</FormLabel>
               <FormControl>
                 <Input type="text" autoComplete="name" {...field} />
+              </FormControl>
+              {fieldState.invalid && <FormMessage />}
+            </FormItem>
+          )}
+        />
+        <FormField
+          name="email"
+          control={form.control}
+          render={({ field, fieldState }) => (
+            <FormItem data-invalid={fieldState.invalid}>
+              <FormLabel>Email (optional)</FormLabel>
+              <FormControl>
+                <Input type="text" autoComplete="on" {...field} />
               </FormControl>
               {fieldState.invalid && <FormMessage />}
             </FormItem>
@@ -254,8 +293,8 @@ export function AddForm() {
       image: undefined,
       climate: undefined,
       ideal_light: undefined,
-      demo_plant: user ? "false" : "true",
-      user_id: user?.id ? String(user.id) : "0",
+      demo_plant: user ? false : true,
+      user_id: user?.id ? user.id : "0",
     },
   });
 
@@ -263,18 +302,7 @@ export function AddForm() {
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit((data) => {
-          const payload = {
-            name: data.name,
-            category: data.category,
-            image: data.image ?? null,
-            health: data.health ?? null,
-            last_water: data.last_water ? data.last_water.toISOString() : null,
-            climate: data.climate ?? null,
-            ideal_light: data.ideal_light ?? null,
-            demo_plant: data.demo_plant === "true",
-            user_id: data.user_id ?? null,
-          };
-
+          const payload = convertToPayload(data);
           fetcher.submit(payload, {
             method: "POST",
             action: "/add",
@@ -372,11 +400,6 @@ export function AddForm() {
                           <span>Pick a date</span>
                         )}
                         <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                        <Input
-                          type="hidden"
-                          name={field.name}
-                          value={field.value ? field.value.toISOString() : ""}
-                        />
                       </Button>
                     </FormControl>
                   </PopoverTrigger>
@@ -385,8 +408,7 @@ export function AddForm() {
                       mode="single"
                       selected={field.value}
                       onSelect={field.onChange}
-                      initialFocus
-                      fromYear={2025}
+                      fromYear={new Date().getFullYear() - 1}
                       toDate={new Date()}
                     />
                   </PopoverContent>
@@ -453,16 +475,6 @@ export function AddForm() {
             </FormItem>
           )}
         />
-        <FormField
-          name="user_id"
-          control={form.control}
-          render={({ field }) => <Input type="hidden" {...field} />}
-        />
-        <FormField
-          name="demo_plant"
-          control={form.control}
-          render={({ field }) => <Input type="hidden" {...field} />}
-        />
         <div className="flex gap-2">
           <Button
             type="button"
@@ -492,18 +504,29 @@ export function AddForm() {
   );
 }
 
-export function EditForm({ plant }: { plant: Plant }) {
+export function EditForm({
+  plant,
+  setEditingActive,
+}: {
+  plant: Plant;
+  setEditingActive: React.Dispatch<React.SetStateAction<boolean>>;
+}) {
   const fetcher = useFetcher();
+  const user: User | null | undefined = useRouteLoaderData("root");
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       name: plant.name || "",
       health: plant.health || "healthy",
-      last_water: plant.last_water ? new Date(plant.last_water) : undefined,
+      last_water: plant.last_water
+        ? parse(plant.last_water, "yyyy-MM-dd", new Date())
+        : undefined,
       image: "",
       category: plant.category || "",
       climate: plant.climate || "",
       ideal_light: plant.ideal_light || "",
+      demo_plant: user ? false : true,
+      user_id: user?.id ? user.id : "0",
     },
   });
 
@@ -511,11 +534,13 @@ export function EditForm({ plant }: { plant: Plant }) {
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit((data) => {
-          const cleanedData = cleanFormData(data);
-          fetcher.submit(cleanedData, {
+          const payload = convertToPayload(data);
+          fetcher.submit(payload, {
             method: "PUT",
             action: `/plants/${plant.id}`,
+            encType: "application/json",
           });
+          setEditingActive(false);
         })}
         className="w-full space-y-4 max-w-3xl mx-auto p-4 bg-white rounded-lg shadow-md"
       >
@@ -665,16 +690,11 @@ export function EditForm({ plant }: { plant: Plant }) {
                         )}
                       >
                         {field.value ? (
-                          format(field.value, "PPP")
+                          format(field.value.toLocaleDateString(), "PPP")
                         ) : (
                           <span>Pick a date</span>
                         )}
                         <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                        <Input
-                          type="hidden"
-                          name={field.name}
-                          value={field.value ? field.value.toISOString() : ""}
-                        />
                       </Button>
                     </FormControl>
                   </PopoverTrigger>
@@ -683,8 +703,7 @@ export function EditForm({ plant }: { plant: Plant }) {
                       mode="single"
                       selected={field.value}
                       onSelect={field.onChange}
-                      initialFocus
-                      fromYear={2025}
+                      fromYear={new Date().getFullYear() - 1}
                       toDate={new Date()}
                     />
                   </PopoverContent>

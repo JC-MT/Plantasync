@@ -45,13 +45,10 @@ export function PlantHistory({
     setTotalPages(totalPages);
     const paginationItems = [];
     const [start, end] = [
+      Math.min(currentPage - 1, totalPages - 2),
       Math.min(
-        currentPage - Math.floor(ACTION_PAGINATION_INCREMENT / 2),
-        totalPages - 2
-      ),
-      Math.max(
-        currentPage + Math.ceil(ACTION_PAGINATION_INCREMENT / 2),
-        currentPage + 1
+        currentPage === 1 ? currentPage + 2 : currentPage + 1,
+        totalPages
       ),
     ];
 
@@ -77,23 +74,25 @@ export function PlantHistory({
       <div className="flex flex-col md:flex-row gap-3">
         <h2 className="font-bold text-2xl/none md:text-3xl/none">History</h2>
         <div className="grid grid-cols-2 md:flex md:flex-wrap gap-1 md:gap-2">
-          {["Watered", "Rotated", "Skipped", "Fertilized"].map((button, idx) => {
-            return (
-              <Button
-                variant={
-                  currentFilter.toLowerCase() === button.toLowerCase()
-                    ? "default"
-                    : "outline"
-                }
-                className="font-semibold"
-                key={idx}
-                onMouseDown={() => handleParamChange("filter", button)}
-                onPointerDown={() => handleParamChange("filter", button)}
-              >
-                {button}
-              </Button>
-            );
-          })}
+          {["Watered", "Rotated", "Skipped", "Fertilized"].map(
+            (button, idx) => {
+              return (
+                <Button
+                  variant={
+                    currentFilter.toLowerCase() === button.toLowerCase()
+                      ? "default"
+                      : "outline"
+                  }
+                  className="font-semibold"
+                  key={idx}
+                  onMouseDown={() => handleParamChange("filter", button)}
+                  onPointerDown={() => handleParamChange("filter", button)}
+                >
+                  {button}
+                </Button>
+              );
+            }
+          )}
         </div>
       </div>
       <Suspense
