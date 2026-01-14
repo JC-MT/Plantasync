@@ -2,21 +2,28 @@ const { VITE_JWT_SECRET } = import.meta.env;
 import type { User } from "~/components/types/SharedTypes";
 import { jwtVerify, SignJWT } from "jose";
 import { createCookie } from "react-router";
-import { toHex } from "../utils/helpers";
 import { postData, getData, deleteData } from "~/db/query";
+import { sha256 } from "../../node_modules/@noble/hashes/sha2";
+import {
+  utf8ToBytes,
+  bytesToHex,
+  randomBytes,
+} from "../../node_modules/@noble/hashes/utils";
+
+function sha256Hex(input: string): string {
+  const bytes = utf8ToBytes(input);
+  const hash = sha256(bytes);
+  return bytesToHex(hash);
+}
 
 export async function createRefreshToken(userId: string) {
-  const refreshToken = crypto.randomUUID() + crypto.randomUUID();
-  const buffer = await crypto.subtle.digest(
-    "SHA-256",
-    new TextEncoder().encode(refreshToken)
-  );
-  const hashHex = toHex(buffer);
+  const refreshToken = bytesToHex(randomBytes(32));
+  const hashRefreshToken = sha256Hex(refreshToken);
 
   try {
     await postData("sessions", {
       user_id: userId,
-      token_hash: hashHex,
+      token_hash: hashRefreshToken,
       expires_at: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000),
     });
 
@@ -27,6 +34,7 @@ export async function createRefreshToken(userId: string) {
 }
 
 export async function createAccessToken(user: User) {
+  const encodedSecret = new TextEncoder().encode(VITE_JWT_SECRET);
   try {
     return await new SignJWT({
       sub: user.name,
@@ -35,27 +43,20 @@ export async function createAccessToken(user: User) {
       .setProtectedHeader({ alg: "HS256" })
       .setIssuedAt()
       .setExpirationTime("20m")
-      .sign(new TextEncoder().encode(VITE_JWT_SECRET));
+      .sign(encodedSecret);
   } catch (error) {
     throw new Error("Error while creating access token: " + error);
   }
 }
 
 export async function verifyAccessToken(token: string) {
-  const { payload } = await jwtVerify(
-    token,
-    new TextEncoder().encode(VITE_JWT_SECRET)
-  );
+  const encodedSecret = new TextEncoder().encode(VITE_JWT_SECRET);
+  const { payload } = await jwtVerify(token, encodedSecret);
   return payload;
 }
 
 export async function verifyRefreshToken(rawRefreshToken: string) {
-  const buffer = await crypto.subtle.digest(
-    "SHA-256",
-    new TextEncoder().encode(rawRefreshToken)
-  );
-  const hashedRefreshToken = toHex(buffer);
-
+  const hashedRefreshToken = sha256Hex(rawRefreshToken);
   return await getData(`sessions?token_hash=eq.${hashedRefreshToken}`);
 }
 
@@ -84,11 +85,11 @@ export async function authorizeRequest(request: Request) {
     try {
       const payload = await verifyAccessToken(accessToken);
       if (payload?.id) {
-        const user: User[] = await getData(
+        const [user]: User[] = await getData(
           `users?select=name,id,email&id=eq.${payload.id}`
         );
 
-        return { user: user[0] ? user[0] : null, accessToken, refreshToken };
+        return { user, accessToken, refreshToken };
       }
     } catch {
       // Ignore error and try to refresh the token
@@ -97,19 +98,21 @@ export async function authorizeRequest(request: Request) {
 
   if (!refreshToken) return { user: null, accessToken, refreshToken };
 
-  const session = await verifyRefreshToken(refreshToken);
-  if (!session[0]) return { user: null, accessToken, refreshToken };
+  await deleteData("sessions?expires_at=lt.now()");
 
-  const user: User[] = await getData(
-    `users?select=name,id,email&id=eq.${session[0].user_id}`
+  const [session] = await verifyRefreshToken(refreshToken);
+  if (!session) return { user: null, accessToken, refreshToken };
+
+  const [user]: User[] = await getData(
+    `users?select=name,id,email&id=eq.${session.user_id}`
   );
 
-  if (!user[0]) return { user: null, accessToken, refreshToken };
+  if (!user) return { user: null, accessToken, refreshToken };
 
-  await deleteData(`sessions?token_hash=eq.${session[0].token_hash}`);
+  await deleteData(`sessions?token_hash=eq.${session.token_hash}`);
 
-  const newAccess = await createAccessToken(user[0]);
-  const newRefresh = await createRefreshToken(user[0].id);
+  const newAccess = await createAccessToken(user);
+  const newRefresh = await createRefreshToken(user.id);
 
-  return { user: user[0], accessToken: newAccess, refreshToken: newRefresh };
+  return { user, accessToken: newAccess, refreshToken: newRefresh };
 }
