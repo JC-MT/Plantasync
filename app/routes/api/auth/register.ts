@@ -20,14 +20,14 @@ export async function action({ request }: { request: Request }) {
     formData.append("password_hash", hashResult.hash);
     formData.append("password_salt", hashResult.salt);
 
-    const user = (await postData("users", formData)) as User[];
+    const [user] = (await postData("users", formData)) as User[];
 
-    if (!user || user.length === 0) {
+    if (!user) {
       throw new Error("An error occurred while creating a new user.");
     }
 
-    const accessToken = await createAccessToken(user[0]);
-    const refreshToken = await createRefreshToken(user[0].id);
+    const accessToken = await createAccessToken(user);
+    const refreshToken = await createRefreshToken(user.id);
     const res = redirect("/account");
 
     res.headers.append("Set-Cookie", await accessCookie.serialize(accessToken));

@@ -20,11 +20,11 @@ export async function action({ request }: { request: Request }) {
     if (!userID) throw new Error("Access could not be confirmed.");
 
     const refreshToken = await refreshCookie.parse(cookies);
-    const session = await verifyRefreshToken(refreshToken);
+    const [session] = await verifyRefreshToken(refreshToken);
 
-    if (!session[0]) throw new Error("Unable to determine valid session.");
+    if (!session) throw new Error("Unable to determine valid session.");
 
-    await deleteData(`sessions?token_hash=eq.${session[0].token_hash}`);
+    await deleteData(`sessions?token_hash=eq.${session.token_hash}`);
 
     const res = redirect("/account");
     res.headers.append(

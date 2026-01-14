@@ -53,7 +53,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
 
 export async function loader({ request }: Route.LoaderArgs) {
   const { user, accessToken, refreshToken } = await authorizeRequest(request);
-  const headers = new Headers(request.headers);
+  const headers = new Headers();
 
   if (accessToken)
     headers.append("Set-Cookie", await accessCookie.serialize(accessToken));

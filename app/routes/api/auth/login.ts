@@ -1,5 +1,5 @@
 import { redirect } from "react-router";
-import { verifyPassword } from "~/utils/helpers"
+import { verifyPassword } from "~/utils/helpers";
 import { deleteData, getData } from "~/db/query";
 import type { User } from "~/components/types/SharedTypes";
 import {
@@ -12,24 +12,24 @@ import {
 export async function action({ request }: { request: Request }) {
   const formData = await request.formData();
   try {
-    const user = (await getData(
+    const [user]: User[] = await getData(
       `users?name=eq.${formData.get("name")}`
-    )) as User[];
+    );
 
-    if (!user[0]) throw new Error("Invalid credentials");
+    if (!user) throw new Error("Invalid credentials");
 
     const isPasswordValid = await verifyPassword(
       `${formData.get("password")}`,
-      user[0].password_hash,
-      user[0].password_salt
+      user.password_hash,
+      user.password_salt
     );
 
     if (!isPasswordValid) throw new Error("Invalid credentials");
 
-    await deleteData(`sessions?user_id=eq.${user[0].id}`);
+    await deleteData(`sessions?user_id=eq.${user.id}`);
 
-    const accessToken = await createAccessToken(user[0]);
-    const refreshToken = await createRefreshToken(user[0].id);
+    const accessToken = await createAccessToken(user);
+    const refreshToken = await createRefreshToken(user.id);
 
     const res = redirect("/account");
 
