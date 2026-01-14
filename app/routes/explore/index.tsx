@@ -13,13 +13,13 @@ import { redirect, useSearchParams } from "react-router";
 import type {
   LoaderData,
   Plant,
-  Search
+  Search,
 } from "~/components/types/SharedTypes.js";
 
 export function meta() {
   return [
     { title: "Plantasync — Discover new plants" },
-    { name: "description", content: "This is the Explore Index page" }
+    { name: "description", content: "This is the Explore Index page" },
   ];
 }
 
@@ -33,7 +33,7 @@ export async function loader({ request }: { request: Request }) {
   }
 
   const plants = await getData(
-    `garden?select=*&limit=${url.searchParams.get("limit") || "10"}`
+    `garden?demo_plant=is.true&limit=${url.searchParams.get("limit") || "10"}`
   );
   if (!plants) {
     throw new Response("Failed to get plants:", { status: 404 });
@@ -53,7 +53,7 @@ export async function action({ request }: { request: Request }) {
     headers.append(
       "Set-Cookie",
       await gardenDataExists.serialize({
-        exists: Number(bodyData.get("plantsExist")) > 0
+        exists: Number(bodyData.get("plantsExist")) > 0,
       })
     );
   }
@@ -67,7 +67,7 @@ export default function Index({ loaderData }: { loaderData: LoaderData }) {
   const [search, setSearch] = useState<Search>({
     name: "",
     climate: "",
-    ideal_light: ""
+    ideal_light: "",
   });
 
   const matchesSearchTerm = (plant: Plant, search: Search) => {
@@ -98,7 +98,7 @@ export default function Index({ loaderData }: { loaderData: LoaderData }) {
     setSearch({
       name: searchParams.get("name") || "",
       climate: searchParams.get("climate") || "",
-      ideal_light: searchParams.get("ideal_light") || ""
+      ideal_light: searchParams.get("ideal_light") || "",
     });
   }, [searchParams]);
 

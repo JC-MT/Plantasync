@@ -135,8 +135,11 @@ export const navLinks: {
   attributes?: { [key: string]: string };
 }[] = [
   {
-    name: "Demo Plants",
+    name: 'Demo Garden',
     to: "/plants",
+    attributes: {
+      reactive: 'user'
+    }
   },
   {
     name: "Explore Plants",

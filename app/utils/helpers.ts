@@ -24,7 +24,7 @@ export function getGeneralWateringInterval(
     : 8;
 }
 
-export function getDaysSinceLastAction(lastActionDate: Date) {
+export function getDaysSinceLastAction(lastActionDate: string) {
   const now = new Date();
   const lastTime = new Date(lastActionDate);
   return Math.floor(
@@ -34,7 +34,7 @@ export function getDaysSinceLastAction(lastActionDate: Date) {
 
 export function isReadyForWatering(
   plantType: string,
-  lastWateredDate: Date,
+  lastWateredDate: string,
   customSchedule: number
 ) {
   const daysSinceLastWatered = getDaysSinceLastAction(lastWateredDate);
@@ -51,46 +51,10 @@ export function isReadyForWatering(
   };
 }
 
-export function formatDateToInputValue(date: Date) {
-  const months = [
-    "January",
-    "February",
-    "March",
-    "April",
-    "May",
-    "June",
-    "July",
-    "August",
-    "September",
-    "October",
-    "November",
-    "December",
-  ];
-  const year = date.getFullYear();
-  const day = String(date.getDate()).padStart(2, "0");
-  return `${months[date.getMonth()]} ${day}, ${year}`;
-}
-
-export function cleanFormData(rawData: FormData | Record<string, any> | unknown) {
-  const cleanedData: Record<string, string | number | null | boolean> = {};
-
-  const rawDataIterator =
-    rawData instanceof FormData ? rawData.entries() : Object.entries(rawData || {});
-
-  for (const [key, value] of rawDataIterator) {;
-    if (!value) {
-      cleanedData[key] = typeof value === "boolean" ? value : null;
-      continue;
-    }
-
-    if (value instanceof Date) {
-      cleanedData[key] = value.toISOString().slice(0, 10);
-    } else {
-      cleanedData[key] = String(value);
-    }
-  }
-
-  return cleanedData;
+export function convertFormData(rawData: FormData | unknown) {
+  return rawData instanceof FormData
+    ? Object.fromEntries(rawData.entries())
+    : rawData;
 }
 
 export function toHex(buffer: ArrayBuffer) {

@@ -16,6 +16,7 @@ interface VaulDrawerProps {
   contentClassName?: string;
   overlayClassName?: string;
   useCustomOverlay: boolean;
+  title?: string;
 }
 
 export default function VaulDrawer({
@@ -25,7 +26,8 @@ export default function VaulDrawer({
   isModal = true,
   contentClassName = "",
   overlayClassName = "",
-  useCustomOverlay = false
+  useCustomOverlay = false,
+  title = "Drawer",
 }: VaulDrawerProps) {
   const [isOpen, setIsOpen] = useState(false);
   const defaultContentClass =
@@ -56,6 +58,7 @@ export default function VaulDrawer({
       <Drawer.Portal>
         <Drawer.Overlay className={overlayClassName || defaultOverlayClass} />
         <Drawer.Content className={contentClassName || defaultContentClass}>
+          <Drawer.Title className='sr-only'>{title}</Drawer.Title>
           {typeof children === "function"
             ? children({ isOpen, setIsOpen })
             : children}

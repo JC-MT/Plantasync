@@ -1,7 +1,7 @@
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL as string;
 const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY as string;
 import type { Plant, Action, User } from "~/components/types/SharedTypes.js";
-import { cleanFormData } from "~/utils/helpers";
+import { convertFormData } from "~/utils/helpers";
 
 const defaultHeaders: {
   apikey: string;
@@ -61,15 +61,15 @@ export const getData = async (
 /**
  * Post data to Supabase
  * @param {string} query - The query string to post data
- * @param {Record<string, any>} body - The data to post
+ * @param {FormData | JSON | unknown} body - The data to post
  * @returns {Promise<Plant[] | Action[] | User[]>} - The posted data
  * @throws {Response} - Throws an error if the request fails
  */
 export const postData = async (
   query: string,
-  body: Record<string, any> | FormData | unknown
+  body: FormData | JSON | unknown
 ): Promise<Plant[] | Action[] | User[]> => {
-  const bodyData = cleanFormData(body);
+  const bodyData = convertFormData(body);
   const res = await fetch(`${supabaseUrl}/rest/v1/${query}`, {
     method: "POST",
     headers: {
@@ -89,15 +89,15 @@ export const postData = async (
 /**
  * Update data in Supabase
  * @param {string} query - The query string to update data
- * @param {Record<string, any> | FormData} updates - The data to update
+ * @param {FormData | JSON | unknown} updates - The data to update
  * @returns {Promise<Plant[] | Action[] | User[]>} - The updated data
  * @throws {Response} - Throws an error if the request fails
  */
 export const updateData = async (
   query: string,
-  updates: Record<string, any> | FormData
+  updates: FormData | JSON | unknown
 ): Promise<Plant[] | Action[] | User[]> => {
-  const bodyData = cleanFormData(updates);
+  const bodyData = convertFormData(updates);
   const res = await fetch(`${supabaseUrl}/rest/v1/${query}`, {
     method: "PATCH",
     headers: {
@@ -117,10 +117,10 @@ export const updateData = async (
 /**
  * Delete data from Supabase
  * @param {string} query - The query string to delete data
- * @returns {Promise<boolean>} - True if the deletion was successful
+ * @returns {Promise<Response>} - The response from the delete request
  * @throws {Response} - Throws an error if the request fails
  */
-export const deleteData = async (query: string): Promise<boolean> => {
+export const deleteData = async (query: string): Promise<Response> => {
   const res = await fetch(`${supabaseUrl}/rest/v1/${query}`, {
     method: "DELETE",
     headers: {
@@ -133,5 +133,5 @@ export const deleteData = async (query: string): Promise<boolean> => {
     throw new Response("Failed to delete data:", { status: res.status });
   }
 
-  return true;
+  return res;
 };

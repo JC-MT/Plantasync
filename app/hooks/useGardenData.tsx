@@ -12,7 +12,7 @@ export function useGardenData() {
   });
 
   const fetchGardenData = () => {
-    getData("garden?select=*")
+    getData("garden?demo_plant=is.true")
       .then((data) => {
         const plants = data || [];
         setAllPlants(plants);

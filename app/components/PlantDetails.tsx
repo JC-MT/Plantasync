@@ -1,8 +1,15 @@
 import type { Plant } from "~/components/types/SharedTypes.js";
-import { formatDateToInputValue } from "~/utils/helpers";
+import { format, parse } from "date-fns";
 import { CustomSchedule } from "./CustomSchedule";
+import { isReadyForWatering } from "~/utils/helpers";
 
 export function PlantDetails({ plant }: { plant: Plant }) {
+  const { nextWateringInDays } = isReadyForWatering(
+    plant.category,
+    plant.last_water,
+    plant.custom_schedule
+  );
+
   return (
     <div className="grid gap-3">
       <h2 className="font-bold text-2xl/none md:text-3xl/none">Information</h2>
@@ -28,7 +35,9 @@ export function PlantDetails({ plant }: { plant: Plant }) {
         {plant.last_water && (
           <p className="gap-1 flex flex-col md:flex-row capitalize text-left text-sm/none md:text-base/none text-dark-green">
             <span className="font-semibold">Last Watered:</span>{" "}
-            <span>{formatDateToInputValue(new Date(plant.last_water))}</span>
+            <span>
+              {format(parse(plant.last_water, "yyyy-MM-dd", new Date()), "PPP")}
+            </span>
           </p>
         )}
         {plant.climate && (
@@ -37,8 +46,11 @@ export function PlantDetails({ plant }: { plant: Plant }) {
             <span>{plant.climate}</span>
           </p>
         )}
+        <CustomSchedule
+          defaultValue={nextWateringInDays}
+          customSchedule={plant.custom_schedule}
+        />
       </div>
-      <CustomSchedule defaultValue={7} customSchedule={plant.custom_schedule} />
     </div>
   );
 }

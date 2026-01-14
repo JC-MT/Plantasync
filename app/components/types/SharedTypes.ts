@@ -6,12 +6,12 @@ export interface Plant {
   name: string;
   category: string;
   ideal_light: string;
-  last_water: Date;
-  last_rotated: Date;
-  last_skipped: Date;
+  last_water: string;
+  last_rotated: string;
+  last_skipped: string;
   health: string;
   climate: string;
-  last_fertilized: Date;
+  last_fertilized: string;
   custom_schedule: number;
   image: string;
 }

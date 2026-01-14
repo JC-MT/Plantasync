@@ -1,10 +1,10 @@
 import { SquarePen } from "lucide-react";
-import { useLocation, redirect } from "react-router";
 import { useEffect, useState } from "react";
 import { Image } from "~/components/Image.js";
 import { Toggle } from "~/components/ui/toggle";
 import { EditForm } from "../../components/Forms";
 import { InfoCard } from "~/components/InfoCard.js";
+import { useLocation, redirect } from "react-router";
 import { PlantTasks } from "~/components/PlantTasks";
 import PageContainer from "~/layout/PageContainer.js";
 import { useGardenData } from "~/hooks/useGardenData.js";
@@ -26,16 +26,21 @@ export function meta({
 }
 
 export async function action({ request, params }: Route.ActionArgs) {
-  const formData = await request.formData();
-
   try {
+    const contentType = request.headers.get("content-type");
+    const data: FormData | JSON = contentType?.includes("application/json")
+      ? await request.json()
+      : await request.formData();
+
     if (request.method === "DELETE" && params?.id) {
       await deleteData(`garden?id=eq.${params.id}`);
+      await deleteData(`actions?plant_id=eq.${Number(params.id)}`);
+
       return redirect("/plants");
     }
 
-    if (formData.get("is_action") && params?.id) {
-      const actionType = formData.get("type") as string;
+    if (data instanceof FormData && data.get("is_action") && params?.id) {
+      const actionType = data.get("type") as string;
       const action = await postData("actions", {
         plant_id: params.id,
         type: actionType,
@@ -43,8 +48,8 @@ export async function action({ request, params }: Route.ActionArgs) {
       if (!action.length) {
         throw new Response("Action creation failed", { status: 500 });
       }
-      formData.delete("type");
-      formData.delete("is_action");
+      data.delete("type");
+      data.delete("is_action");
     }
 
     try {
@@ -52,7 +57,7 @@ export async function action({ request, params }: Route.ActionArgs) {
         throw Error("Failed to update plant: Missing plant ID");
       }
 
-      const plant = await updateData(`garden?id=eq.${params.id}`, formData);
+      const plant = await updateData(`garden?id=eq.${params.id}`, data);
       return plant;
     } catch (error) {
       throw new Response("Failed to update plant:", {
@@ -111,9 +116,7 @@ export default function Detail({
   const [editingActive, setEditingActive] = useState(false);
 
   useEffect(() => {
-    if (location.state?._isRedirect) {
-      fetchGardenData();
-    }
+    if (location.state?._isRedirect) fetchGardenData();
   }, []);
 
   return (
@@ -166,7 +169,7 @@ export default function Detail({
               </InfoCard>
             </>
           ) : (
-            <EditForm plant={plant} />
+            <EditForm plant={plant} setEditingActive={setEditingActive} />
           )}
         </div>
       </div>

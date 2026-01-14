@@ -43,9 +43,16 @@ export const CustomSchedule = ({
   };
 
   return (
-    <div className="grid gap-2 place-items-end">
-      <div className="flex items-center gap-2">
-        <Label htmlFor="custom-schedule">custom schedule</Label>
+    <div className="grid gap-1 w-full mt-1 col-span-2 border-t border-t-primary/30 pt-3">
+      <div className="flex items-center gap-2 justify-between">
+        <Label htmlFor="custom-schedule" className="md:text-base/none">
+          Custom Schedule
+          <span className="font-medium text-sm/none md:text-base/none">
+            {isCustomScheduleActive
+              ? ` -> (Every ${customDays === 1 ? "day" : `${customDays} days`})`
+              : ""}
+          </span>
+        </Label>
         <Switch
           id="custom-schedule"
           name="schedule"
@@ -54,14 +61,14 @@ export const CustomSchedule = ({
           onCheckedChange={handleFormState}
         />
       </div>
-      {isCustomScheduleActive || isEditing ? (
+      {isEditing ? (
         <fetcher.Form
           method="post"
           encType="multipart/form-data"
-          className="grid gap-1 place-items-end w-full"
+          className="grid gap-2 place-self-end max-w-80 w-full"
           onSubmit={handleSubmit}
         >
-          <div className="sm:max-w-72 m-0 dark:bg-input/30 border-input data-focus-within:border-ring data-focus-within:ring-ring/50 data-focus-within:has-aria-invalid:ring-destructive/20 dark:data-focus-within:has-aria-invalid:ring-destructive/40 data-focus-within:has-aria-invalid:border-destructive relative inline-flex h-8 w-full min-w-0 items-center overflow-hidden rounded-md border bg-transparent text-base whitespace-nowrap shadow-xs transition-[color,box-shadow] outline-none data-disabled:pointer-events-none data-disabled:cursor-not-allowed data-disabled:opacity-50 data-focus-within:ring-[3px] md:text-sm">
+          <div className="m-0 dark:bg-input/30 border-input data-focus-within:border-ring data-focus-within:ring-ring/50 data-focus-within:has-aria-invalid:ring-destructive/20 dark:data-focus-within:has-aria-invalid:ring-destructive/40 data-focus-within:has-aria-invalid:border-destructive relative inline-flex h-8 w-full min-w-0 items-center overflow-hidden rounded-md border bg-transparent text-base whitespace-nowrap shadow-xs transition-[color,box-shadow] outline-none data-disabled:pointer-events-none data-disabled:cursor-not-allowed data-disabled:opacity-50 data-focus-within:ring-[3px] md:text-sm">
             <span className="grow text-sm md:text-base px-8 py-1 text-center font-medium">
               Every {customDays === 1 ? "day" : `${customDays} days`}
             </span>
@@ -111,7 +118,7 @@ export const CustomSchedule = ({
           {isEditing ? (
             <Button
               size="sm"
-              className="w-fit text-xs/none md:text-sm/none font-semibold px-3 py-1.5 md:px-4 md:py-2 min-w-[74px]"
+              className="w-full text-xs/none md:text-sm/none font-semibold px-3 py-1.5 md:px-4 md:py-2 min-w-[74px]"
               type="submit"
               disabled={fetcher.state === "submitting"}
             >
