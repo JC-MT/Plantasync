@@ -82,11 +82,12 @@ export function SignInForm({
           fetcher.submit(data, {
             method: "POST",
             action: "/api/login",
+            encType: "application/json",
           });
         })}
         className="grid space-y-4 max-w-lg mx-auto p-4 bg-white rounded-lg shadow-md md:my-14"
       >
-        <div className="text-center">
+        <div className="text-center grid">
           <img
             alt="logo"
             className="object-cover size-10 md:size-12 place-self-center"
@@ -194,11 +195,12 @@ export function SignUpForm({
           fetcher.submit(data, {
             method: "POST",
             action: "/api/register",
+            encType: "application/json",
           });
         })}
         className="grid space-y-4 max-w-lg mx-auto p-4 bg-white rounded-lg shadow-md md:my-14"
       >
-        <div className="text-center">
+        <div className="text-center grid">
           <img
             alt="logo"
             className="object-cover size-10 md:size-12 place-self-center"
@@ -275,6 +277,117 @@ export function SignUpForm({
             </Button>
           </div>
         </div>
+      </form>
+    </Form>
+  );
+}
+
+export function UpdateAccountForm({ user }: { user: User }) {
+  const fetcher = useFetcher();
+  const updateAccountFormSchema = z.object({
+    name: z.string().min(1, "Required: Please provide a name"),
+    email: z.string().email("Invalid email address").optional(),
+    password: z.string().optional(),
+  });
+  const form = useForm<z.infer<typeof updateAccountFormSchema>>({
+    resolver: zodResolver(updateAccountFormSchema),
+    defaultValues: {
+      name: user.name,
+      email: user.email || undefined,
+      password: "",
+    },
+  });
+
+  return (
+    <Form {...form}>
+      <form
+        onSubmit={form.handleSubmit((data) => {
+          fetcher.submit(data, {
+            method: "PATCH",
+            action: "/account",
+            encType: "application/json",
+          });
+        })}
+        className="grid"
+      >
+        <FormField
+          name="name"
+          control={form.control}
+          render={({ field, fieldState }) => (
+            <FormItem
+              data-invalid={fieldState.invalid}
+              className="pb-3 border-b border-primary/30 flex justify-between items-center gap-3"
+            >
+              <FormLabel>Name</FormLabel>
+              <FormControl>
+                  <Input
+                    type="text"
+                    autoComplete="name"
+                    className="max-w-80"
+                    {...field}
+                  />
+              </FormControl>
+                  {fieldState.invalid && <FormMessage/>}
+            </FormItem>
+          )}
+        />
+        <FormField
+          name="email"
+          control={form.control}
+          render={({ field, fieldState }) => (
+            <FormItem
+              data-invalid={fieldState.invalid}
+              className="py-3 border-b border-primary/30 flex justify-between items-center gap-3"
+            >
+              <FormLabel>Email</FormLabel>
+              <FormControl>
+
+                  <Input
+                    type="text"
+                    autoComplete="on"
+                    className="max-w-80"
+                    {...field}
+                  />
+              </FormControl>
+                  {fieldState.invalid && <FormMessage />}
+            </FormItem>
+          )}
+        />
+        <FormField
+          name="password"
+          control={form.control}
+          render={({ field, fieldState }) => (
+            <FormItem
+              data-invalid={fieldState.invalid}
+              className="py-3 border-b border-primary/30 flex justify-between items-center gap-3"
+            >
+              <FormLabel>New Password</FormLabel>
+              <FormControl>
+                  <Input
+                    type="password"
+                    autoComplete="current-password"
+                    className="max-w-80"
+                    {...field}
+                  />
+              </FormControl>
+                  {fieldState.invalid && <FormMessage />}
+            </FormItem>
+          )}
+        />
+        <Button
+          className="place-self-end font-semibold mt-3"
+          type="submit"
+          disabled={fetcher.state === "submitting"}
+        >
+          {fetcher.state === "submitting" ? (
+            <>
+              <Spinner />
+              Saving...
+            </>
+          ) : (
+            "Save"
+          )}
+        </Button>
       </form>
     </Form>
   );
@@ -391,7 +504,7 @@ export function AddForm() {
                         variant={"outline"}
                         className={cn(
                           "w-full pl-3 text-left font-normal",
-                          !field.value && "text-muted-foreground"
+                          !field.value && "text-muted-foreground",
                         )}
                       >
                         {field.value ? (
@@ -686,7 +799,7 @@ export function EditForm({
                         variant={"outline"}
                         className={cn(
                           "w-full pl-3 text-left font-normal",
-                          !field.value && "text-muted-foreground"
+                          !field.value && "text-muted-foreground",
                         )}
                       >
                         {field.value ? (
