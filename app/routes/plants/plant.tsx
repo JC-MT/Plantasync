@@ -134,14 +134,14 @@ export default function Detail({
           viewTransition={plant.id}
         />
         <div className="grid gap-4 h-fit">
-          <div className="tracking-tight text-balance grid gap-1">
+          <div
+            className="tracking-tight text-balance grid gap-1"
+            style={{
+              viewTransitionName: `plant-title-${plant.id}`,
+            }}
+          >
             <div className="flex justify-between items-center">
-              <h1
-                className="text-3xl/none md:text-5xl font-bold"
-                style={{
-                  viewTransitionName: `plant-title-${plant.id}`,
-                }}
-              >
+              <h1 className="text-3xl/none md:text-5xl font-bold">
                 {plant.name}
               </h1>
               <Toggle

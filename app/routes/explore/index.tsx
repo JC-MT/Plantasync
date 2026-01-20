@@ -103,7 +103,7 @@ export default function Index({ loaderData }: { loaderData: LoaderData }) {
   }, [searchParams]);
 
   return (
-    <PageContainer>
+    <PageContainer className="min-h-screen">
       <div className="flex flex-col md:flex-row mb-2 gap-1 md:gap-4 w-full md:items-center">
         <h1 className="text-3xl/none md:text-5xl font-bold tracking-tight min-w-fit">
           All Plants
@@ -114,19 +114,7 @@ export default function Index({ loaderData }: { loaderData: LoaderData }) {
         {plants
           .filter((plant) => matchesSearchTerm(plant, search))
           .map((plant: Plant, idx: number) => (
-            <PlantCard key={idx} plant={plant}>
-              <Image
-                imageUrl="default_plant_image.jpg?v=1746612628"
-                classNames="h-44 sm:h-48 md:h-52 lg:h-56 w-full object-cover bg-plant-card rounded-t-lg border-b border-zinc-200"
-                loading={"lazy"}
-                sizes="(min-width: 1024px) 20vw, (min-width: 768px) 33vw, 45vw"
-                alt="Stock plant image"
-                isHero={false}
-                width={1000}
-                height={1000}
-                viewTransition={plant.id}
-              />
-            </PlantCard>
+            <PlantCard key={idx} plant={plant} />
           ))}
       </div>
       <LoadMore
