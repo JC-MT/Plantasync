@@ -7,15 +7,15 @@ export function meta() {
     {
       name: "description",
       content:
-        "With Plantasync, you will be able to keep your plants alive longer."
-    }
+        "With Plantasync, you will be able to keep your plants alive longer.",
+    },
   ];
 }
 
 export default function Home() {
   return (
-    <>
-      <section className="relative">
+    <section>
+      <div className="relative">
         <div data-animated="parallax">
           <Image
             imageUrl="parallax-hero.png?v=1746351965"
@@ -45,7 +45,7 @@ export default function Home() {
             Get started with demo plants
           </a>
         </div>
-      </section>
+      </div>
       <div className="bg-light-theme mb-10 md:pt-10 relative">
         <section className="grid gap-8 mx-4 px-4 md:px-16 py-10 rounded-xl bg-white text-dark-green max-w-6xl xl:mx-auto relative">
           <h3 className="text-pretty md:w-1/2 mx-auto text-center text-4xl md:text-5xl font-semibold">
@@ -171,7 +171,6 @@ export default function Home() {
           </div>
         </section>
       </div>
-      <script src="https://flackr.github.io/scroll-timeline/dist/scroll-timeline.js"></script>
-    </>
+    </section>
   );
 }
