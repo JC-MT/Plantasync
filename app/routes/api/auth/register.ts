@@ -6,21 +6,31 @@ import {
   createRefreshToken,
   createAccessToken,
   accessCookie,
-  refreshCookie
+  refreshCookie,
 } from "~/server/auth";
 
 export async function action({ request }: { request: Request }) {
-  const formData = await request.formData();
+  const data: {
+    name: string;
+    password?: string;
+    password_hash: string;
+    password_salt: string;
+  } = await request.json();
+
+  if (!data.name || !data.password) {
+    return new Response("Missing required credentials", { status: 400 });
+  }
   try {
-    const hashResult = await hashPassword(`${formData.get("password")}`);
+    const hashResult = hashPassword(data.password);
     if (!hashResult?.hash || !hashResult?.salt) {
       throw new Error("Error while hashing password.");
     }
-    formData.delete("password");
-    formData.append("password_hash", hashResult.hash);
-    formData.append("password_salt", hashResult.salt);
 
-    const [user] = (await postData("users", formData)) as User[];
+    delete data.password;
+    data.password_hash = hashResult.hash;
+    data.password_salt = hashResult.salt;
+
+    const [user] = (await postData("users", data)) as User[];
 
     if (!user) {
       throw new Error("An error occurred while creating a new user.");
@@ -34,7 +44,7 @@ export async function action({ request }: { request: Request }) {
 
     res.headers.append(
       "Set-Cookie",
-      await refreshCookie.serialize(refreshToken)
+      await refreshCookie.serialize(refreshToken),
     );
 
     return res;
