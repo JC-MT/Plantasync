@@ -120,17 +120,22 @@
     opacity: 0.5;
   }
 }
-[data-animated="parallax"] {
-  animation: parallax linear both;
-  animation-timeline: scroll();
+
+@supports (animation-timeline: scroll()) {
+  [data-animated="parallax"] {
+    animation: parallax linear both;
+    animation-timeline: scroll();
+  }
 }
 
-[data-animated="box"] {
-  animation:
-    scale-half 1s linear both,
-    fade-in-out 1s linear both;
-  animation-timeline: view();
-  animation-range: 0% 40%;
+@supports (animation-timeline: view()) {
+  [data-animated="box"] {
+    animation:
+      scale-half 1s linear both,
+      fade-in-out 1s linear both;
+    animation-timeline: view();
+    animation-range: 0% 40%;
+  }
 }
 
 .dark {
