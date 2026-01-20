@@ -1,5 +1,10 @@
-const { VITE_IMAGE_CDN_URL } = import.meta.env;
 import { Image } from "~/components/Image";
+import {
+  CalendarCheck,
+  ClipboardList,
+  ClockAlert,
+  ScanSearch,
+} from "lucide-react";
 
 export function meta() {
   return [
@@ -54,118 +59,63 @@ export default function Home() {
           <div className="grid md:grid-cols-10 gap-6">
             <div
               data-animated="box"
-              className="grid gap-2 rounded-xl bg-light-green p-4 md:col-span-4"
+              className="flex flex-col gap-2 rounded-xl bg-light-green p-4 md:col-span-4"
             >
               <div className="flex gap-2 items-center">
-                <a
-                  href="https://www.flaticon.com/free-icons/plant"
-                  title="plant icons"
-                  className="min-w-fit pointer-events-none"
-                  aria-label="Plant icons created by Freepik - Flaticon"
-                  tabIndex={-1}
-                >
-                  <img
-                    src={`${VITE_IMAGE_CDN_URL}watering-plants.png?v=1746526232`}
-                    alt=""
-                    className="size-9 md:size-12"
-                  />
-                </a>
-                <h3 className="text-xl md:text-2xl font-medium text-balance">
+                <ClockAlert />
+                <h3 className="text-lg md:text-xl font-medium text-balance">
                   Intelligent watering reminders
                 </h3>
               </div>
               <p className="text-base">
                 With Plantasync, you will be able to keep your plants alive
-                longer. You can set reminders or depend on our dynamic
-                notification system that will account for weather and your
-                plants epecific needs.
+                longer. Plantasync will remind you when it's time to water your
+                plants.
               </p>
             </div>
             <div
               data-animated="box"
-              className="grid gap-2 rounded-xl bg-dark-green p-4 text-light-green md:col-span-6"
+              className="flex flex-col gap-2 rounded-xl bg-dark-green p-4 text-light-green md:col-span-6"
             >
               <div className="flex gap-2 items-center">
-                <a
-                  href="https://www.flaticon.com/free-icons/plant"
-                  title="plant icons"
-                  className="min-w-fit pointer-events-none"
-                  aria-label="Plant icons created by Freepik - Flaticon"
-                  tabIndex={-1}
-                >
-                  <img
-                    src={`${VITE_IMAGE_CDN_URL}watering-plants.png?v=1746526232`}
-                    alt=""
-                    className="size-9 md:size-12"
-                  />
-                </a>
-                <h3 className="text-xl md:text-2xl font-medium text-balance">
-                  Intelligent watering reminders
+                <CalendarCheck />
+                <h3 className="text-lg md:text-xl font-medium text-balance">
+                  Custom Schedules
                 </h3>
               </div>
               <p className="text-base">
-                With Plantasync, you will be able to keep your plants alive
-                longer. You can set reminders or depend on our dynamic
-                notification system that will account for weather and your
-                plants epecific needs.
+                Create custom watering schedules for your plants to ensure they
+                receive the right amount of water at the right time.
               </p>
             </div>
             <div
               data-animated="box"
-              className="grid gap-2 rounded-xl bg-medium-green p-4 md:col-span-6"
+              className="flex flex-col gap-2 rounded-xl bg-medium-green p-4 md:col-span-6"
             >
               <div className="flex gap-2 items-center">
-                <a
-                  href="https://www.flaticon.com/free-icons/plant"
-                  title="plant icons"
-                  className="min-w-fit pointer-events-none"
-                  aria-label="Plant icons created by Freepik - Flaticon"
-                  tabIndex={-1}
-                >
-                  <img
-                    src={`${VITE_IMAGE_CDN_URL}watering-plants.png?v=1746526232`}
-                    alt=""
-                    className="size-9 md:size-12"
-                  />
-                </a>
-                <h3 className="text-xl md:text-2xl font-medium text-balance">
-                  Intelligent watering reminders
+                <ScanSearch />
+                <h3 className="text-lg md:text-xl font-medium text-balance">
+                  Plant Scanner
                 </h3>
               </div>
               <p className="text-base">
-                With Plantasync, you will be able to keep your plants alive
-                longer. You can set reminders or depend on our dynamic
-                notification system that will account for weather and your
-                plants epecific needs.
+                Our Plant Scanner is useful for a smoother set up process or to
+                simply identify the plant right in front of you.
               </p>
             </div>
             <div
               data-animated="box"
-              className="grid gap-2 rounded-xl bg-forrest-green p-4 text-light-green md:col-span-4"
+              className="flex flex-col gap-2 rounded-xl bg-forrest-green p-4 text-light-green md:col-span-4"
             >
               <div className="flex gap-2 items-center">
-                <a
-                  href="https://www.flaticon.com/free-icons/plant"
-                  title="plant icons"
-                  className="min-w-fit pointer-events-none"
-                  aria-label="Plant icons created by Freepik - Flaticon"
-                  tabIndex={-1}
-                >
-                  <img
-                    src={`${VITE_IMAGE_CDN_URL}watering-plants.png?v=1746526232`}
-                    alt=""
-                    className="size-9 md:size-12"
-                  />
-                </a>
-                <h3 className="text-xl md:text-2xl font-medium text-balance">
-                  Intelligent watering reminders
+                <ClipboardList />
+                <h3 className="text-lg md:text-xl font-medium text-balance">
+                  History
                 </h3>
               </div>
               <p className="text-base">
-                With Plantasync, you will be able to keep your plants alive
-                longer. You can set reminders or depend on our dynamic
-                notification system that will account for weather and your
-                plants epecific needs.
+                Keep track of past actions to get a better understanding of your
+                plant care routine.
               </p>
             </div>
           </div>
