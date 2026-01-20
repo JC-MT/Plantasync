@@ -1,7 +1,8 @@
-import { redirect } from "react-router";
+import type { User } from "~/components/types/SharedTypes";
+import type { Route } from "./+types/login";
 import { verifyPassword } from "~/utils/helpers";
 import { deleteData, getData } from "~/db/query";
-import type { User } from "~/components/types/SharedTypes";
+import { redirect } from "react-router";
 import {
   createRefreshToken,
   createAccessToken,
@@ -9,19 +10,20 @@ import {
   refreshCookie,
 } from "~/server/auth";
 
-export async function action({ request }: { request: Request }) {
-  const formData = await request.formData();
+export async function action({ request }: Route.ActionArgs) {
+  const data: { name: string; password: string } = await request.json();
+  if (!data.name || !data.password) {
+    return new Response("Missing required credentials", { status: 400 });
+  }
   try {
-    const [user]: User[] = await getData(
-      `users?name=eq.${formData.get("name")}`
-    );
+    const [user]: User[] = await getData(`users?name=eq.${data.name}`);
 
     if (!user) throw new Error("Invalid credentials");
 
-    const isPasswordValid = await verifyPassword(
-      `${formData.get("password")}`,
+    const isPasswordValid = verifyPassword(
+      `${data.password}`,
       user.password_hash,
-      user.password_salt
+      user.password_salt,
     );
 
     if (!isPasswordValid) throw new Error("Invalid credentials");
@@ -36,7 +38,7 @@ export async function action({ request }: { request: Request }) {
     res.headers.append("Set-Cookie", await accessCookie.serialize(accessToken));
     res.headers.append(
       "Set-Cookie",
-      await refreshCookie.serialize(refreshToken)
+      await refreshCookie.serialize(refreshToken),
     );
 
     return res;
