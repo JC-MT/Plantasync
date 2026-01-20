@@ -1,11 +1,13 @@
-import { NavLink } from "react-router";
+import { NavLink, useRouteLoaderData } from "react-router";
+import type { User } from "~/components/types/SharedTypes";
 import { navLinks } from "~/constants";
 const { VITE_IMAGE_CDN_URL } = import.meta.env;
 
 export function Footer() {
   const currentYear = new Date().getFullYear();
+  const user: User | null | undefined = useRouteLoaderData("root");
   return (
-    <footer className=" bg-dark-green text-light-green">
+    <footer className="bg-dark-green text-light-green">
       <div className="grid md:grid-cols-2 px-4 md:px-16 py-8 md:py-12 max-w-7xl mx-auto">
         <div className="flex flex-col mb-10 md:mb-0 place-content-between">
           <NavLink
@@ -39,7 +41,9 @@ export function Footer() {
                   prefetch="intent"
                   end
                 >
-                  {link.name}
+                  {link?.attributes?.reactive === "user" && user
+                    ? "Your Garden"
+                    : link.name}
                 </NavLink>
               ))}
             </div>
